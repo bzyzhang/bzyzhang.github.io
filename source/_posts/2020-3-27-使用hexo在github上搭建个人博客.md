@@ -170,8 +170,37 @@ NexT 内部提供数学公式渲染的引擎，这样你就不需要自己手动
          enable: true
    ```
 
+# 四、源码的管理
 
-# 四、Markdown的编辑器
+上面使用`hexo d`命令，只是把hexo生成的博客文件上传到了Github，但是博客的源文件并没有上传上去。下一步，我们将要把博客的源文件上传到Github。
+
+在浏览器中，打开上面新建的Github仓库。目前，只有一个master分支，我们需要新建一个hexo分支来存储我们的博客源文件。在左侧Branch:master的位置，输入分支的名称，下面会有提示创建新的分支。
+
+然后，在settings->Branches->Default branch中，将hexo设为默认分支。
+
+在新的文件夹中，使用Git Bash将仓库克隆到本地。
+
+显示隐藏文件，将除了.git文件夹以外的都删除。
+
+把我们之前的博客源文件全复制过来，除了`.deploy_git`。这里注意一下，复制过来的源文件应该有一个`.gitignore`，用来忽略一些不需要的文件，如果没有的话，自己新建一个，内容如下：
+
+```
+.DS_Store
+Thumbs.db
+db.json
+*.log
+node_modules/
+public/
+.deploy*/
+```
+
+还要注意一下，如果之前克隆过theme中的主题文件，那么也应该把主题文件中的`.git`文件夹删除。
+
+而后，将博客源文件上传到hexo分支。
+
+这样，更换电脑之后，只要将环境配置好，然后把仓库克隆下来，进入克隆下来的文件夹，先运行`hexo clean`试试。根据提示进行一些操作即可。[这里](https://zhuanlan.zhihu.com/p/44213627)有比较详细的步骤可以参考一下，之前做的时候在这一步也耽误了好久。
+
+# 五、Markdown的编辑器
 
 测试了markdownpad2、vscode等，最终选择了Typora编辑器。但要注意的是，Typora有一些markdown的扩展功能，需要在文件->偏好设置里面设置一下，才会有效果，例如==高亮==等。
 
@@ -182,3 +211,4 @@ NexT 内部提供数学公式渲染的引擎，这样你就不需要自己手动
 - [3] [hexo-theme-next](https://github.com/theme-next/hexo-theme-next)
 - [4] [hexo的next主题个性化配置教程](https://segmentfault.com/a/1190000009544924)
 - [5] [使用Typora添加数学公式](https://blog.csdn.net/mingzhuo_126/article/details/82722455)
+- [6] [hexo超完整的搭建教程，让你拥有一个专属个人博客](https://zhuanlan.zhihu.com/p/44213627)

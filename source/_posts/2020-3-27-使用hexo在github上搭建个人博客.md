@@ -216,6 +216,11 @@ public/
 
 测试了markdownpad2、vscode等，最终选择了Typora编辑器。但要注意的是，Typora有一些markdown的扩展功能，需要在文件->偏好设置里面设置一下，才会有效果，例如==高亮==等。
 
+# 六、一些有帮助的工具软件
+
+1. ScreenToGit：截屏，生成动态图的软件。
+2. GeoGebra：动态画图软件，可以很方便的得到各种函数的几何图案。
+
 # 参考
 
 - [1] [GitHub+Hexo 搭建个人网站详细教程](https://zhuanlan.zhihu.com/p/26625249)

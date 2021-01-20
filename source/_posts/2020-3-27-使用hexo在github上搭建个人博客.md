@@ -224,7 +224,7 @@ public/
 # 参考
 
 - [1] [GitHub+Hexo 搭建个人网站详细教程](https://zhuanlan.zhihu.com/p/26625249)
-- [2] [[hexo-renderer-pandoc](https://github.com/wzpan/hexo-renderer-pandoc)
+- [2] [hexo-renderer-pandoc](https://github.com/wzpan/hexo-renderer-pandoc)
 - [3] [hexo-theme-next](https://github.com/theme-next/hexo-theme-next)
 - [4] [hexo的next主题个性化配置教程](https://segmentfault.com/a/1190000009544924)
 - [5] [使用Typora添加数学公式](https://blog.csdn.net/mingzhuo_126/article/details/82722455)

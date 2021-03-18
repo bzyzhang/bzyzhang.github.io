@@ -1,6 +1,6 @@
 ---
 title: 真机测试Graphics APIs
-date: 2020-03-17 21:29:18
+date: 2021-03-17 21:29:18
 categories: 实验
 tags: [GPU]
 mathjax: true

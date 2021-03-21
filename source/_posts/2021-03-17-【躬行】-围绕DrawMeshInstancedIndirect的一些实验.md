@@ -1,5 +1,5 @@
 ---
-title:【躬行】-围绕DrawMeshInstancedIndirect的一些实验
+title: 【躬行】-围绕DrawMeshInstancedIndirect的一些实验
 date: 2021-03-17 21:29:18
 categories: 躬行
 tags: [图形学]
@@ -14,7 +14,7 @@ mathjax: true
 
 在官方文档的[GPU instancing](https://docs.unity3d.com/Manual/GPUInstancing.html)中提到：
 
-> You can also use the calls [Graphics.DrawMeshInstanced](https://docs.unity3d.com/ScriptReference/Graphics.DrawMeshInstanced.html) and [Graphics.DrawMeshInstancedIndirect](https://docs.unity3d.com/ScriptReference/Graphics.DrawMeshInstancedIndirect.html) to perform GPU Instancing from your scripts.
+> You can also use the calls Graphics.DrawMeshInstanced and Graphics.DrawMeshInstancedIndirect to perform GPU Instancing from your scripts.
 
 所以，Graphics.DrawMeshInstancedIndirect()对平台和图形API的要求，与GPU instancing的要求是一致的。在上面的文档中，提到了GPU instancing对平台和图形API的要求：
 
@@ -43,7 +43,7 @@ mathjax: true
 > Disable this option to manually pick and reorder the graphics APIs. (OpenGL). By default this option is enabled, and Unity tries GLES3.2. If the device doesn’t support GLES3.2, Unity falls back to GLES3.1, GLES3 or GLES2. If only GLES3 is in the list, additional checkboxes appear: **Require ES3.1**, **Require ES3.1+AEP** and **Require ES3.2**. These allow you to force the corresponding graphics API.
 > **Important**: Unity adds the GLES3/GLES3.1/AEP/3.2 requirement to your Android manifest only if GLES2 is not in the list and the Minimum API Level is set to JellyBean (API level 18) or higher. In this case only, your application does not appear on unsupported devices in the Google Play Store.
 
-我的理解是，当选择了Auto Graphics API时，Unity会按照GLES3.2->GLES3.1->GLES3->GLES2的顺序，设置设备支持的图像API；当没有选择Auto Graphics API时，可以手动控制的顺序，Unity会按照列表，从上之下的顺序，设置设备支持的图像API。
+我的理解是，当选择了Auto Graphics API时，Unity会按照GLES3.2->GLES3.1->GLES3->GLES2的顺序，设置设备支持的图像API；当没有选择Auto Graphics API时，可以手动控制顺序，Unity会按照列表，从上至下的顺序，设置设备支持的图像API。
 
 下面，会进行几个实验，来测试Graphics API的配置在真机上的表现，顺便测试了Graphics.DrawMeshInstancedIndirect()方法在真机上的兼容性。
 
@@ -94,7 +94,8 @@ Unity版本：2019.4.22f1c1
 根据实验的结果，同时参考官方手册中的内容，可以得出如下结论：
 
 1. 根据实验一的结果，当启用了Auto Graphics API的时候，Unity会尝试支持GLES3.2。但是对比两台手机的表现，可以发现，华为 Nova 3上面的显示是有问题的。目前没有找到出现问题的原因。
-2. 根据实验二、三和四的结果，当没有启用Auto Graphics API的时候，可以手动选择、排序Graphics APIs。同时，可以发现，硬件设备支持多个图形API。根据实验结果，可以得出：Unity会根据Graphics APIs在列表中的排序，从上之下，检测硬件设备是否支持相应的图形API。Vulkan支持Graphics.DrawMeshInstancedIndirect()，GLES 2.0不支持Graphics.DrawMeshInstancedIndirect()。而GLES 3可能需要某个版本之后才完全支持Graphics.DrawMeshInstancedIndirect()。
+2. 根据实验二、三和四的结果，当没有启用Auto Graphics API的时候，可以手动选择、排序Graphics APIs。同时，可以发现，硬件设备支持多个图形API。根据实验结果，可以得出：Unity会根据Graphics APIs在列表中的排序，从上至下，检测硬件设备是否支持相应的图形API。Vulkan支持Graphics.DrawMeshInstancedIndirect()，GLES 2.0不支持Graphics.DrawMeshInstancedIndirect()。而GLES 3可能需要某个版本之后才完全支持Graphics.DrawMeshInstancedIndirect()。
+
 # 项目中的做法
 
 目前的做法是，选择手动排序Graphics APIs，按照顺序添加了Vulkan、OpenGLES3。但根据官方的统计[数据](https://developer.android.com/about/dashboards)，支持Vulkan的的设备只有53%左右。后面可能需要进行更多的验证，有了新的结果也会更新本文。

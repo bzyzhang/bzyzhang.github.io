@@ -219,7 +219,22 @@ public/
 # 六、一些有帮助的工具软件
 
 1. ScreenToGit：截屏，生成动态图的软件。
+
 2. GeoGebra：动态画图软件，可以很方便的得到各种函数的几何图案。
+
+# 七、一些有用的包
+
+1. serve
+
+   hexo g生成的文件在public文件夹，与网页真正使用的资源文件一致。可以通过打开public里面的网页判断发布的网站是否有问题。
+
+   安装serve：
+
+   > npm install -g serve
+   
+   开启serve：
+   
+   > serve
 
 # 参考
 
@@ -229,3 +244,4 @@ public/
 - [4] [hexo的next主题个性化配置教程](https://segmentfault.com/a/1190000009544924)
 - [5] [使用Typora添加数学公式](https://blog.csdn.net/mingzhuo_126/article/details/82722455)
 - [6] [hexo超完整的搭建教程，让你拥有一个专属个人博客](https://zhuanlan.zhihu.com/p/44213627)
+- [7] [serve](https://github.com/vercel/serve)

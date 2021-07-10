@@ -65,17 +65,17 @@ ILSpy版本：7.1.0.6543
 
 创建一个空的URP工程，设置到Android平台，Player Setting中的Scripting Backend设置为“Mono”。默认情况下，项目中包含的脚本如下所示：
 
-此处有图
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710201916.png)
 
 每次打完包后，对apk进行解压即可。解压后，程序集的位置在“{解压的文件}\assets\bin\Data\Managed\”下面：
 
-此处有图
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710202102.png)
 
 ## 1、默认打包
 
 我们需要关心的是“Assembly-CSharp.dll”程序集。使用ILSpy打开Assembly-CSharp.dll，可以看到：
 
-此处有图
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710202128.png)
 
 项目中的两个运行时脚本Readme和SimpleCameraController都被编译到程序集Assembly-CSharp.dll中。
 
@@ -83,17 +83,17 @@ ILSpy版本：7.1.0.6543
 
 在SimpleCameraController的同级目标创建Assembly Definition，Assembly Definition的设置保持默认即可。观察SimpleCameraController，可以发现SimpleCameraController的程序集信息是新创建的Assembly Definition：
 
-此处有图。
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710202148.png)
 
 打包，解压，可以看到，刚才新创建的Assembly Definition产生的程序集：
 
-此处有图。
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710202206.png)
 
 使用ILSpy分别打开Assembly-CSharp.dll和NewAssembly.dll，结果如下所示：
 
-此处有图
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710202226.png)
 
-此处有图
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710202241.png)
 
 可以发现，SimpleCameraController被编译进新的程序集NewAssembly.dll中，而原本的程序集Assembly-CSharp.dll中没有SimpleCameraController了。
 
@@ -101,11 +101,11 @@ ILSpy版本：7.1.0.6543
 
 删除上面创建的Assembly Definition，在SimpleCameraController的同级目标创建Assembly Definition Reference。假设，我们想访问的Unity的Package是Unity UI，设置Assembly Definition Reference上的Assembly Definition为UnityEngine.UI即可，如下图所示：
 
-此处有图。
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710211122.png)
 
 打包，解压，可以看到，上面新创建的程序集NewAssembly.dll没了，而使用ILSpy打开Assembly-CSharp.dll，也并没有看到SimpleCameraController。那么，SimpleCameraController去哪儿了呢？使用ILSpy打开UnityEngine.UI.dll程序集：
 
-此处有图。
+![](https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1//img/2021-7-10/20210710202300.png)
 
 可以发现，SimpleCameraController被包含到了UnityEngine.UI.dll程序集中，也就是说，SimpleCameraController可以访问程序集中的internal级别的类了。
 

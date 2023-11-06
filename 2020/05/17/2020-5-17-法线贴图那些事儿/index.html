@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"bzyzhang.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述 在学习法线贴图的过程中，有几个比较难以理解的概念，这里记录一下。特别说一下，本文的法线贴图是切线空间下的法线贴图。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="法线贴图那些事儿">
+<meta property="og:url" content="https://bzyzhang.github.io/2020/05/17/2020-5-17-%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/index.html">
+<meta property="og:site_name" content="白纸一张">
+<meta property="og:description" content="概述 在学习法线贴图的过程中，有几个比较难以理解的概念，这里记录一下。特别说一下，本文的法线贴图是切线空间下的法线贴图。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-17T09:02:26.000Z">
+<meta property="article:modified_time" content="2020-05-17T09:02:26.000Z">
+<meta property="article:author" content="bzyzhang">
+<meta property="article:tag" content="Normal Map">
+<meta property="article:tag" content="Tangent Space">
+<meta property="article:tag" content="TBN">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://bzyzhang.github.io/2020/05/17/2020-5-17-%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>法线贴图那些事儿 | 白纸一张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	
+	<a target="_blank" rel="noopener" href="https://github.com/bzyzhang" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+	
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">白纸一张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">三十而立，四十而不惑</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bzyzhang.github.io/2020/05/17/2020-5-17-%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting@master//img/20200330174230.jpg">
+      <meta itemprop="name" content="bzyzhang">
+      <meta itemprop="description" content="留下一些工作、学习、生活的痕迹">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白纸一张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          法线贴图那些事儿
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-17 17:02:26" itemprop="dateCreated datePublished" datetime="2020-05-17T17:02:26+08:00">2020-05-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9B%BE%E5%BD%A2%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">图形学</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述">概述</h1>
+<p>在学习<a
+target="_blank" rel="noopener" href="https://learnopengl.com/Advanced-Lighting/Normal-Mapping">法线贴图</a>的过程中，有几个比较难以理解的概念，这里记录一下。<strong>特别说一下，本文的法线贴图是切线空间下的法线贴图。</strong><span id="more"></span></p>
+<h1 id="空间变换">空间变换</h1>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-5-17/20200523103017.png"
+alt="空间变换示意图" />
+<figcaption aria-hidden="true">空间变换示意图</figcaption>
+</figure>
+<p>如上图所示，简单表达了在使用法线贴图的过程中，涉及到的几个空间变换：</p>
+<ol type="1">
+<li><p>切线空间：从法线贴图中采样得到的法线，在切线空间中；</p></li>
+<li><p>对象空间：物体的本地坐标空间，顶点的相关信息，在对象空间；</p></li>
+<li><p>世界空间：光源位置、观察者位置等，在世界空间中。</p></li>
+</ol>
+<p>在空间变换的过程中，主要涉及到了两个变换矩阵：</p>
+<ol type="1">
+<li><p><span
+class="math inline">\(TBN\)</span>矩阵：从切线空间变换到对象空间；</p></li>
+<li><p><span
+class="math inline">\(Model\)</span>矩阵：从对象空间变换到世界空间。</p></li>
+</ol>
+<p>对于上述概念，大部分都是比较熟悉的，只有法线贴图、切线空间和<span
+class="math inline">\(TBN\)</span>矩阵比较陌生。下面，将分别介绍一下。</p>
+<h1 id="法线贴图">法线贴图</h1>
+<p>在3D计算机图形学中，法线贴图是一种用于伪造凹凸光照的技术，是凹凸贴图的一种实现。它用于添加细节，而不使用更多的多边形。这种技术的一个常见用途是，通过从高精度多边形或高度图生成法线贴图，来极大地增强低精度多边形的外观和细节。下图来自Paolo
+Cignoni，图中对比了两种方式：</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-5-17/20200523101852.png"
+alt="法线可以使低精度模型实现高精度模型的效果" />
+<figcaption
+aria-hidden="true">法线可以使低精度模型实现高精度模型的效果</figcaption>
+</figure>
+<p>法线贴图通常存储为常规RGB图像，其中RGB分量分别对应于表面法线的X，Y和Z坐标。</p>
+<p>法线的每个分量的值的范围是<span
+class="math inline">\([-1,1]\)</span>，而RGB分量的值的范围是<span
+class="math inline">\([0,1]\)</span>。所以，在将法线存储为RGB图像时，需要对每个分量做一个映射：
+<span class="math display">\[
+vec3 \quad rgb\_normal = normal * 0.5 + 0.5
+\]</span>
+这里要注意，将法线存储到法线贴图的过程中，需要进行上述操作。当我们从法线贴图中读取到法线数据后，需要进行上述变换的逆变换，即从<span
+class="math inline">\([0,1]\)</span>映射到<span
+class="math inline">\([-1,1]\)</span>。</p>
+<h1 id="切线空间">切线空间</h1>
+<p>那么，法线向量应该相对于哪个坐标系呢？我们可以选择模型顶点的的坐标系，即对象空间；也可以选择模型纹理所在的坐标系，即切线空间，也称为纹理空间。</p>
+<p>对象空间中，法线信息是相对于对象空间的朝向的，各个方向的法线向量都有，所有贴图看起来色彩比较丰富；而在切线空间中，法线是相对于顶点的，大致指向顶点信息中的法线方向，即法线向量接近于<span
+class="math inline">\((0,0,1)\)</span>，映射到RGB是<span
+class="math inline">\((0.5,0.5,1)\)</span>，这是一种偏蓝的颜色。下图分别是对象空间和切线空间下的法线纹理。</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-5-17/20200523105701.jpg"
+alt="对象空间和切线空间下的法线纹理" />
+<figcaption
+aria-hidden="true">对象空间和切线空间下的法线纹理</figcaption>
+</figure>
+<p>那么，怎么进行选择呢？考虑一下二者的优缺点：</p>
+<ol type="1">
+<li><p>重用性：对于对象空间的法线贴图，它是相对于特定对象的，假如应用到其他的对象上，可能效果就不正确了；而切线空间中的法线贴图，记录的是相对法线信息，所以可以把它应用到其他对象上，也能得到正确的结果。</p></li>
+<li><p>可压缩：考虑到法线向量是单位向量，而且Z分量总是正的，可以只存储XY方向，而推导出Z方向。</p></li>
+</ol>
+<p>综上所述，我们一般选择切线空间下的法线贴图。</p>
+<h1 id="tbn矩阵"><span class="math inline">\(TBN\)</span>矩阵</h1>
+<p>在光照的计算过程中，需要用到光线方向、视线方向和法线方向等，为了得到正确的结果，这些变量必须在同一坐标系下计算。参考一下本文开头的“坐标变换示意图”。</p>
+<p>在纹理坐标系中，x和y分量与2D图片的水平方向和垂直方向对齐，而z分量指向图片外部的上方。如下图所示：</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-5-17/20200523140057.png"
+alt="纹理坐标系" />
+<figcaption aria-hidden="true">纹理坐标系</figcaption>
+</figure>
+<p>为了正确使用贴图中的纹理信息，我们必须找到一种方法——<strong>从切线坐标空间变换到对象空间</strong>。这可以通过指定切线坐标系的坐标轴在对象空间中的方向来达到。</p>
+<p>对一个单独的三角形面片来说，我们可以认为纹理贴图覆盖在三角形的表面上，如下图所示：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-5-17/20200523141704.png" /></p>
+<p>根据上图，可以得出：三角面片和纹理贴图是<strong>共面</strong>的。那么，根据平行四边形法则，可以得出：
+<span class="math display">\[
+\begin{matrix}
+E_{1} = \Delta U_{1}U + \Delta V_{1}V \\
+E_{2} = \Delta U_{2}U + \Delta V_{2}V \\
+\end{matrix}
+\]</span> 其中，<span class="math inline">\(E_{1}\)</span>和<span
+class="math inline">\(E_{2}\)</span>是两个顶点之间的向量差，可以根据顶点的坐标计算出来；<span
+class="math inline">\(\Delta U_{1}\)</span>、<span
+class="math inline">\(\Delta V_{1}\)</span>、<span
+class="math inline">\(\Delta U_{2}\)</span>和<span
+class="math inline">\(\Delta
+V_{2}\)</span>分别是纹理坐标的水平和垂直方向的差，可以根据纹理坐标计算得到。<span
+class="math inline">\(U\)</span>和<span
+class="math inline">\(V\)</span>分别是纹理的水平和垂直坐标轴，是要计算的未知量。</p>
+<p>写成坐标表示： <span class="math display">\[
+\begin{matrix}
+\left( E_{1x},E_{1y},E_{1z} \right) = \Delta
+U_{1}\left(U_{x},U_{y},U_{z}\right) + \Delta V_{1}\left(
+V_{x},V_{y},V_{z} \right) \\
+\left( E_{2x},E_{2y},E_{2z} \right) = \Delta
+U_{2}\left(U_{x},U_{y},U_{z}\right) + \Delta V_{2}\left(
+V_{x},V_{y},V_{z} \right) \\
+\end{matrix}
+\]</span> 上面的方程，也可以写成矩阵乘法的形式： <span
+class="math display">\[
+\begin{bmatrix}
+E_{1x} &amp; E_{1y} &amp; E_{1z} \\
+E_{2x} &amp; E_{2y} &amp; E_{2z} \\
+\end{bmatrix}=
+\begin{bmatrix}
+\Delta U_{1} &amp; \Delta V_{1} \\
+\Delta U_{2} &amp; \Delta V_{2} \\
+\end{bmatrix}
+\begin{bmatrix}
+U_{x} &amp; U_{y} &amp; U_{z} \\
+V_{x} &amp; V_{y} &amp; V_{z} \\
+\end{bmatrix}
+\]</span></p>
+<p>两边同时乘以<span class="math inline">\(\Delta U \Delta
+V\)</span>的逆矩阵，可得： <span class="math display">\[
+\begin{bmatrix}
+U_{x} &amp; U_{y} &amp; U_{z} \\
+V_{x} &amp; V_{y} &amp; V_{z} \\
+\end{bmatrix}=
+\begin{bmatrix}
+\Delta U_{1} &amp; \Delta V_{1} \\
+\Delta U_{2} &amp; \Delta V_{2} \\
+\end{bmatrix}^{-1}
+\begin{bmatrix}
+E_{1x} &amp; E_{1y} &amp; E_{1z} \\
+E_{2x} &amp; E_{2y} &amp; E_{2z} \\
+\end{bmatrix}
+\]</span></p>
+<p>求逆矩阵不太方便，可以使用<strong>伴随矩阵法</strong>： <span
+class="math display">\[
+\begin{bmatrix}
+U_x &amp; U_y &amp; U_z \\
+V_x &amp; V_y &amp; V_z
+\end{bmatrix}  =
+\frac{1}{\Delta U_1 \Delta V_2 - \Delta U_2 \Delta V_1}
+\begin{bmatrix}
+\Delta V_2 &amp; -\Delta V_1 \\
+-\Delta U_2 &amp; \Delta U_1
+\end{bmatrix}
+\begin{bmatrix}
+E_{1x} &amp; E_{1y} &amp; E_{1z} \\
+E_{2x} &amp; E_{2y} &amp; E_{2z}
+\end{bmatrix}
+\]</span></p>
+<p>至此，我们求出了<span class="math inline">\(U\)</span>和<span
+class="math inline">\(V\)</span>向量。但是我们需要的构成<span
+class="math inline">\(TBN\)</span>空间的坐标轴是正交的，这里求出的<span
+class="math inline">\(U\)</span>和<span
+class="math inline">\(V\)</span>并不一定能满足正交的条件。这里，顶点的法线<span
+class="math inline">\(N\)</span>是已知的，我们可以根据<span
+class="math inline">\(U\)</span>、<span
+class="math inline">\(V\)</span>和<span
+class="math inline">\(N\)</span>，根据<strong>格拉姆-施密特正交化</strong>方法，求出与<span
+class="math inline">\(N\)</span>正交的<span
+class="math inline">\(T\)</span>和<span
+class="math inline">\(B\)</span>（此处假设切线空间是右手坐标系）： <span
+class="math display">\[
+\begin{aligned}
+T &amp;= normalize \left( U - dot \left( U,N \right) * N \right) \\
+B &amp;= normalize \left( cross \left( N,T \right) \right) \\
+TBN &amp;= mat3 \left( T,B,N \right)
+\end{aligned}
+\]</span></p>
+<p>这样，我们获得了坐标轴相互正交的<span
+class="math inline">\(TBN\)</span>矩阵。</p>
+<h1 id="实际使用中的法线贴图">实际使用中的法线贴图</h1>
+<p>看完上面计算切线空间的<span
+class="math inline">\(TBN\)</span>矩阵的部分，估计也是头大。不禁想到，每次使用法线贴图的过程，真的如此麻烦吗？</p>
+<p>幸运的是，答案是否定的。</p>
+<p>一般情况下，模型存储的顶点信息中，都包含了顶点的法线和切线的数据，这样，我们就不用进行上面的复杂计算了，直接使用法线和切线的叉乘，求出副切线，从而构成<span
+class="math inline">\(TBN\)</span>矩阵。</p>
+<h1 id="参考">参考</h1>
+<ul>
+<li>[1] <a
+target="_blank" rel="noopener" href="https://learnopengl.com/Advanced-Lighting/Normal-Mapping">Normal
+Mapping</a></li>
+<li>[2] <a
+target="_blank" rel="noopener" href="https://docs.cryengine.com/display/SDKDOC4/Tangent+Space+Normal+Mapping">Tangent
+Space Normal Mapping</a></li>
+<li>[3] <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/139593847">切线空间（Tangent
+Space）完全解析</a></li>
+<li>[4] <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Normal_mapping">Normal
+Mapping</a></li>
+<li>[5] <a
+target="_blank" rel="noopener" href="http://windsmoon.com/2017/11/28/切线空间-Tangent-Space-的计算与应用/">切线空间(Tangent
+Space) 的计算与应用</a></li>
+<li>[6] <a target="_blank" rel="noopener" href="http://foundationsofgameenginedev.com/">Foundations of
+Game Engine Development Volume 2: Rendering</a></li>
+</ul>
+
+    </div>
+	
+	<div>
+		
+			<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+		
+	</div>
+	
+	<div>
+      
+        
+
+      
+	</div>
+
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Normal-Map/" rel="tag"><i class="fa fa-tag"></i> Normal Map</a>
+              <a href="/tags/Tangent-Space/" rel="tag"><i class="fa fa-tag"></i> Tangent Space</a>
+              <a href="/tags/TBN/" rel="tag"><i class="fa fa-tag"></i> TBN</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/19/2020-4-19-%E4%BB%A4%E4%BA%BA%E8%BF%B7%E6%83%91%E7%9A%84Gamma/" rel="prev" title="令人迷惑的Gamma">
+      <i class="fa fa-chevron-left"></i> 令人迷惑的Gamma
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/28/2020-11-28-%EF%BC%88%E4%B8%80%EF%BC%89%E9%A1%B6%E7%82%B9%E5%8A%A8%E7%94%BB/" rel="next" title="练习项目(一)：顶点动画">
+      练习项目(一)：顶点动画 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">空间变换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE"><span class="nav-number">3.</span> <span class="nav-text">法线贴图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%87%E7%BA%BF%E7%A9%BA%E9%97%B4"><span class="nav-number">4.</span> <span class="nav-text">切线空间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tbn%E7%9F%A9%E9%98%B5"><span class="nav-number">5.</span> <span class="nav-text">\(TBN\)矩阵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E4%BD%BF%E7%94%A8%E4%B8%AD%E7%9A%84%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE"><span class="nav-number">6.</span> <span class="nav-text">实际使用中的法线贴图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="bzyzhang"
+      src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting@master//img/20200330174230.jpg">
+  <p class="site-author-name" itemprop="name">bzyzhang</p>
+  <div class="site-description" itemprop="description">留下一些工作、学习、生活的痕迹</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/bzyzhang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;bzyzhang" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bzyzhang</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">112k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:42</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

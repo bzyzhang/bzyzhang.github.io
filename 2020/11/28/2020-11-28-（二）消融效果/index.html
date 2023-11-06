@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"bzyzhang.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述 本篇是“练习项目”系列的第二篇，主要介绍一下利用消融实现的效果。在游戏开发的过程中，有很多看起来很神奇的效果，都是使用消融的原理实现的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="练习项目(二)：消融效果">
+<meta property="og:url" content="https://bzyzhang.github.io/2020/11/28/2020-11-28-%EF%BC%88%E4%BA%8C%EF%BC%89%E6%B6%88%E8%9E%8D%E6%95%88%E6%9E%9C/index.html">
+<meta property="og:site_name" content="白纸一张">
+<meta property="og:description" content="概述 本篇是“练习项目”系列的第二篇，主要介绍一下利用消融实现的效果。在游戏开发的过程中，有很多看起来很神奇的效果，都是使用消融的原理实现的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-28T10:37:36.000Z">
+<meta property="article:modified_time" content="2020-11-28T10:37:36.000Z">
+<meta property="article:author" content="bzyzhang">
+<meta property="article:tag" content="Dissolve">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://bzyzhang.github.io/2020/11/28/2020-11-28-%EF%BC%88%E4%BA%8C%EF%BC%89%E6%B6%88%E8%9E%8D%E6%95%88%E6%9E%9C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>练习项目(二)：消融效果 | 白纸一张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	
+	<a target="_blank" rel="noopener" href="https://github.com/bzyzhang" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+	
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">白纸一张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">三十而立，四十而不惑</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bzyzhang.github.io/2020/11/28/2020-11-28-%EF%BC%88%E4%BA%8C%EF%BC%89%E6%B6%88%E8%9E%8D%E6%95%88%E6%9E%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting@master//img/20200330174230.jpg">
+      <meta itemprop="name" content="bzyzhang">
+      <meta itemprop="description" content="留下一些工作、学习、生活的痕迹">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白纸一张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          练习项目(二)：消融效果
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-28 18:37:36" itemprop="dateCreated datePublished" datetime="2020-11-28T18:37:36+08:00">2020-11-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%83%E4%B9%A0%E9%A1%B9%E7%9B%AE/" itemprop="url" rel="index"><span itemprop="name">练习项目</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述">概述</h1>
+<p>本篇是“练习项目”系列的第二篇，主要介绍一下利用消融实现的效果。在游戏开发的过程中，有很多看起来很神奇的效果，都是使用消融的原理实现的。<span id="more"></span></p>
+<h1 id="原理">原理</h1>
+<p>主要的原理，就是使用噪声图和透明度测试，根据噪声图中采样的值，对某些像素进行剔除。</p>
+<h1 id="基本原理实现">1、基本原理实现</h1>
+<p>这里会实现一个最基础的项目，来简单了解消融的基本原理。主要的代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">float</span> cutout = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_NoiseTex</span>, <span class="params">sampler_NoiseTex</span>, <span class="params">input</span>.<span class="params">uv</span>.<span class="params">zw</span>)</span>.r;</span><br><span class="line"><span class="constructor">AlphaDiscard(<span class="params">cutout</span>, <span class="params">_Threshold</span>)</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>注意，这里要使用AlphaDiscard方法的话，必须设置正确的KeyWord。</strong></p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128184418.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.1-Basic.shader">代码</a></p>
+<h1 id="边缘颜色">2、边缘颜色</h1>
+<p>在上面的动图中可以看到，只是简单实现了消融，但看起来效果不太好，比较单调。下面将使用几种方式来丰富效果。</p>
+<h2 id="纯颜色">2.1 纯颜色</h2>
+<p>第一种实现方式比较简单，只是在未消融的边界留下一段缓冲，显示边界的颜色。这里需要开放两个属性接口：_EdgeLength、_EdgeColor。即边缘长度和边缘颜色。先根据噪声图进行透明度剔除，然后根据透明度确定一段范围内显示边界的颜色。代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">float</span> cutout = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_NoiseTex</span>, <span class="params">sampler_NoiseTex</span>, <span class="params">input</span>.<span class="params">uv</span>.<span class="params">zw</span>)</span>.r;</span><br><span class="line"><span class="constructor">AlphaDiscard(<span class="params">cutout</span>, <span class="params">_Threshold</span>)</span>;</span><br><span class="line">                </span><br><span class="line"><span class="keyword">if</span> (cutout - _Threshold &lt; _EdgeLength)</span><br><span class="line">	return _EdgeColor;</span><br></pre></td></tr></table></figure>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128190633.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.2-EdgeColor.shader">代码</a></p>
+<h2 id="两种颜色混合">2.2 两种颜色混合</h2>
+<p>一种颜色的效果看起来还是有点单调，使用两种颜色混合的效果可能会更好。根据_EdgeLength可以确定一个“边界”范围。“边界”与剔除区域的交界可以使用第一种颜色，“边界”与正常区域的交界可以使用第二种颜色，而在“边界”内部，则可以在第一种颜色和第二种颜色之间进行插值。代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">float</span> cutout = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_NoiseTex</span>, <span class="params">sampler_NoiseTex</span>, <span class="params">input</span>.<span class="params">uv</span>.<span class="params">zw</span>)</span>.r;</span><br><span class="line"><span class="constructor">AlphaDiscard(<span class="params">cutout</span>, <span class="params">_Threshold</span>)</span>;</span><br><span class="line">                </span><br><span class="line"><span class="keyword">if</span> (cutout - _Threshold &lt; _EdgeLength)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">float</span> degree = (cutout - _Threshold)<span class="operator"> / </span>_EdgeLength;</span><br><span class="line">	return lerp(_EdgeFirstColor, _EdgeSecondColor, degree);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128191932.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.3-TwoEdgeColor.shader">代码</a></p>
+<h2 id="边界颜色混合物体颜色">2.3 边界颜色混合物体颜色</h2>
+<p>从上面的动图可以看到，在“边界”区域只是边界的颜色，看起来有点不自然。下一步，就是对边界颜色和物体颜色进行混合，从而看起来更加地自然。主要代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">float</span> cutout = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_NoiseTex</span>, <span class="params">sampler_NoiseTex</span>, <span class="params">input</span>.<span class="params">uv</span>.<span class="params">zw</span>)</span>.r;</span><br><span class="line"><span class="constructor">AlphaDiscard(<span class="params">cutout</span>, <span class="params">_Threshold</span>)</span>;</span><br><span class="line">                </span><br><span class="line"><span class="built_in">float</span> degree = saturate((cutout - _Threshold)<span class="operator"> / </span>_EdgeLength);</span><br><span class="line">half4 edgeColor = lerp(_EdgeFirstColor, _EdgeSecondColor, degree);</span><br><span class="line">                </span><br><span class="line">half4 col = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_MainTex</span>, <span class="params">sampler_MainTex</span>, <span class="params">input</span>.<span class="params">uv</span>.<span class="params">xy</span>)</span>;</span><br><span class="line">                </span><br><span class="line">half4 finalColor = lerp(edgeColor, col, degree);</span><br></pre></td></tr></table></figure>
+<p>在上面的代码中，degree的范围是[0,1]，剔除区域是0，正常区域是1，而在“边界”区域，则在[0,1]之间。使用degree进行第一次插值，得到边界颜色，第二次插值，则混合了边界颜色和物体本身的颜色。</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128192742.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.4-BlendOriginColor.shader">代码</a></p>
+<h2 id="使用渐变纹理">2.4 使用渐变纹理</h2>
+<p>为了让“边界”颜色更加丰富，可以使用渐变纹理。</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128193032.png" /></p>
+<p>然后就可以使用degree对渐变纹理进行采样，来得到边界的颜色。得到边界颜色后，与物体本身的颜色混合的过程，就与上面相同了。主要代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">float</span> cutout = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_NoiseTex</span>, <span class="params">sampler_NoiseTex</span>, <span class="params">input</span>.<span class="params">uv</span>.<span class="params">zw</span>)</span>.r;</span><br><span class="line"><span class="constructor">AlphaDiscard(<span class="params">cutout</span>, <span class="params">_Threshold</span>)</span>;</span><br><span class="line">                </span><br><span class="line"><span class="built_in">float</span> degree = saturate((cutout - _Threshold)<span class="operator"> / </span>_EdgeLength);</span><br><span class="line">half4 edgeColor = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_RampTex</span>, <span class="params">sampler_RampTex</span>, <span class="params">float2</span>(<span class="params">degree</span>, <span class="params">degree</span>)</span>);</span><br><span class="line">                </span><br><span class="line">half4 col = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_MainTex</span>, <span class="params">sampler_MainTex</span>, <span class="params">input</span>.<span class="params">uv</span>.<span class="params">xy</span>)</span>;</span><br><span class="line">                </span><br><span class="line">half4 finalColor = lerp(edgeColor, col, degree);</span><br></pre></td></tr></table></figure>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128193230.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.5-Ramp.shader">代码</a></p>
+<h1 id="从特定点开始消融">3、从特定点开始消融</h1>
+<p>为了从特定点开始消融，必须将片元到特定点的距离考虑进来。</p>
+<p>第一步，定义消融开始点的属性，该属性是在世界空间中定义的。在顶点着色器中将该点转换到物体的本地空间，然后将顶点的本地坐标和该点的本地空间坐标传递给片元着色器。在片元着色器中求出片元到该点的距离。代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Properties</span></span><br><span class="line"><span class="constructor">_StartPoint(<span class="string">&quot;Start Point&quot;</span>,Vector)</span> = (<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>)   <span class="comment">//需要找到该点的世界坐标</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//Vert</span></span><br><span class="line">output.objPos = input.positionOS.xyz;</span><br><span class="line">output.objStartPos = <span class="constructor">TransformWorldToObject(<span class="params">_StartPoint</span>.<span class="params">xyz</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Frag</span></span><br><span class="line"><span class="built_in">float</span> distance = length(input.objPos - input.objStartPos);</span><br></pre></td></tr></table></figure>
+<p>第二步，求出网格内任意两点之间的最大距离，用来对上面求出的距离进行归一化处理。这一步需要在C#中实现，思路是遍历任意两点，然后求出最大距离。这里求出的是网格内任意两点之间的最大距离，所以上面定义的消融开始点最好在网格上面，这样效果才是对的。代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dissolve</span> :</span> MonoBehaviour &#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        Material mat = GetComponent&lt;MeshRenderer&gt; ().material;</span><br><span class="line">        mat.<span class="built_in">SetFloat</span> (<span class="string">&quot;_MaxDistance&quot;</span>, <span class="built_in">CalculateMaxDistance</span> ());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">float</span> <span class="title">CalculateMaxDistance</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">float</span> maxDistance = <span class="number">0</span>;</span><br><span class="line">        Vector3[] vertices = GetComponent&lt;MeshFilter&gt; ().mesh.vertices;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; vertices.Length; i++) &#123;</span><br><span class="line">            Vector3 v1 = vertices[i];</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; vertices.Length; k++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == k) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">                Vector3 v2 = vertices[k];</span><br><span class="line">                <span class="keyword">float</span> mag = (v1 - v2).magnitude;</span><br><span class="line">                <span class="keyword">if</span> (maxDistance &lt; mag) maxDistance = mag;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> maxDistance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时，也要定义_MaxDistance属性来存放最大距离值。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">_MaxDistance</span>(<span class="string">&quot;Max Distance&quot;</span>,Float) = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>第三步就是归一化距离值。</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">float normalizedDistance</span> = saturate(distance / _MaxDistance);</span><br></pre></td></tr></table></figure>
+<p>第四步是定义_DistanceEffect属性，来控制距离对整个消融效果的影响程度。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Properties</span></span><br><span class="line"><span class="constructor">_DistanceEffect(<span class="string">&quot;Distance Effect&quot;</span>,Range(0,1)</span>) = <span class="number">0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//Frag</span></span><br><span class="line"><span class="built_in">float</span> cutout = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_NoiseTex</span>, <span class="params">sampler_NoiseTex</span>, <span class="params">input</span>.<span class="params">uv</span>.<span class="params">zw</span>)</span>.r<span class="operator"> * </span>(<span class="number">1.0</span> - _DistanceEffect) + normalizedDistance<span class="operator"> * </span>_DistanceEffect;</span><br><span class="line"><span class="constructor">AlphaDiscard(<span class="params">cutout</span>, <span class="params">_Threshold</span>)</span>;</span><br></pre></td></tr></table></figure>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128200647.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.6-DissolveFromPoint.shader">代码</a></p>
+<h1 id="应用场景切换">4、应用：场景切换</h1>
+<p>利用上面的从特定点开始消融的原理，我们可以用来实现场景切换的效果。</p>
+<p>如下图所示，就是我们要实现的效果。</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128202628.gif" /></p>
+<p>因为我们在上面实现的是从特点点开始消融，而上图是从从外部向特定点开始消融，所以这里要做一些修改。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">float</span> normalizedDistance = <span class="number">1</span>.<span class="number">0</span> - saturate(distance / _MaxDistance);</span><br></pre></td></tr></table></figure>
+<p>这样，就会从四周向中心点开始消融了。</p>
+<p>然后，我们的距离是在局部空间计算的。但是这里有很多物体，再使用局部空间的话，就不太方便，所以，这里转到世界空间计算。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Vert</span></span><br><span class="line">output.worldPos = <span class="constructor">TransformObjectToWorld(<span class="params">input</span>.<span class="params">positionOS</span>.<span class="params">xyz</span>)</span>;</span><br><span class="line"><span class="comment">//Frag</span></span><br><span class="line"><span class="built_in">float</span> distance = length(input.worldPos - <span class="module-access"><span class="module"><span class="identifier">_StartPoint</span>.</span></span>xyz);</span><br></pre></td></tr></table></figure>
+<p>接下来，需要获得场景所有物体的顶点到消融点的最大距离，用来对上面的距离做归一化处理，这一步，需要在C#中处理，<a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Script/DissolveEnvironment.cs">代码在这里</a>。</p>
+<p>这样，场景中建一个空物体Environment，然后给Environment添加上面的C#脚本，再把其它物体都放到Environment下面即可。</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128203543.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.7-ToPoint.shader">代码</a></p>
+<h1 id="从特定方向开始消融">5、从特定方向开始消融</h1>
+<p>理解了上面的从特定点开始消融，那么这里的从特定方向开始消融就很好理解了。</p>
+<p>这里实行的是从X方向消融。</p>
+<p>第一步，求出X方向的边界，传递给Shader。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public <span class="keyword">class</span> DissolveDirection : MonoBehaviour &#123;</span><br><span class="line"></span><br><span class="line">    void Start <span class="literal">()</span> &#123;</span><br><span class="line">        Material mat = GetComponent&lt;Renderer&gt;<span class="literal">()</span>.material;</span><br><span class="line">        <span class="built_in">float</span> minX, maxX;</span><br><span class="line">        <span class="constructor">CalculateMinMaxX(<span class="params">out</span> <span class="params">minX</span>, <span class="params">out</span> <span class="params">maxX</span>)</span>;</span><br><span class="line">        mat.<span class="constructor">SetFloat(<span class="string">&quot;_MinBorderX&quot;</span>, <span class="params">minX</span>)</span>;</span><br><span class="line">        mat.<span class="constructor">SetFloat(<span class="string">&quot;_MaxBorderX&quot;</span>, <span class="params">maxX</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    void <span class="constructor">CalculateMinMaxX(<span class="params">out</span> <span class="params">float</span> <span class="params">minX</span>, <span class="params">out</span> <span class="params">float</span> <span class="params">maxX</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Vector3<span class="literal">[]</span> vertices = GetComponent&lt;MeshFilter&gt;<span class="literal">()</span>.mesh.vertices;</span><br><span class="line">        minX = maxX = vertices<span class="literal">[<span class="number">0</span>]</span>.x;</span><br><span class="line">        <span class="keyword">for</span>(<span class="built_in">int</span> i = <span class="number">1</span>; i &lt; vertices.Length; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">float</span> x = vertices<span class="literal">[<span class="identifier">i</span>]</span>.x;</span><br><span class="line">            <span class="keyword">if</span> (x &lt; minX)</span><br><span class="line">                minX = x;</span><br><span class="line">            <span class="keyword">if</span> (x &gt; maxX)</span><br><span class="line">                maxX = x;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二步，定义从X的正方向还是负方向开始消融，确定边界，然后求出各个片元在X方向上与边界的距离。再进行归一化处理。</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">float</span> <span class="built_in">range</span> = _MaxBorderX - _MinBorderX;</span><br><span class="line"><span class="built_in">float</span> <span class="built_in">border</span> = _MinBorderX;</span><br><span class="line"><span class="keyword">if</span> (_Direction == <span class="number">1</span>) //<span class="number">1</span>表示从X正方向开始，其他值则从负方向</span><br><span class="line">	<span class="built_in">border</span> = _MaxBorderX;</span><br><span class="line">                </span><br><span class="line"><span class="built_in">float</span> distance = <span class="built_in">abs</span>(input.objPosX - <span class="built_in">border</span>);</span><br><span class="line"><span class="built_in">float</span> normalizedDistance = saturate(distance / <span class="built_in">range</span>);</span><br></pre></td></tr></table></figure>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128204249.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.8-DissolveFromDirectionX.shader">代码</a></p>
+<h1 id="灰烬飞散效果">6、灰烬飞散效果</h1>
+<p>第一步，灰烬向特定方向飞散。这一步可以在顶点着色器中通过顶点动画实现。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">float</span> cutout = <span class="type">GetNormalizeDistance</span>(output.positionWS.y);</span><br><span class="line">float3 localFlyDirection = <span class="type">TransformWorldToObjectDir</span>(_FlyDirection.xyz);</span><br><span class="line"><span class="built_in">float</span> flyDegree = (_Threshold- cutout) / _EdgeLength;</span><br><span class="line"><span class="built_in">float</span> <span class="keyword">val</span> = saturate(flyDegree * _FlyIntensity);</span><br><span class="line">input.positionOS.xyz += localFlyDirection * <span class="keyword">val</span>;</span><br></pre></td></tr></table></figure>
+<p>第二步，从特定方向开始消融。上面已经介绍了。这里注意，因为要生成灰烬的效果，所以要延迟透明度剔除的时机。</p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> edgeCutout = cutout - _Threshold;</span><br><span class="line"><span class="keyword">clip</span>(edgeCutout + _AshWidth);</span><br></pre></td></tr></table></figure>
+<p>这样，可以在消融边缘留下大片的颜色。而我们需要的是细碎的灰烬，所以需要再次使用噪声图对这片颜色区域进行消融处理。</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(degree &lt; <span class="number">0.001</span>)</span><br><span class="line">&#123;</span><br><span class="line">	clip(whiteNoise * <span class="variable">_AshDensity</span> + normalizedDistance * <span class="variable">_DistanceEffect</span> - <span class="variable">_Threshold</span>);</span><br><span class="line">	finalColor = <span class="variable">_AshColor</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128210450.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.9-DirectionAsh.shader">代码</a></p>
+<h1 id="镜头遮挡消融">7、镜头遮挡消融</h1>
+<p>这里要实现的，是当角色和镜头之间有障碍物时，对障碍物进行消融处理。</p>
+<p>第一步，将角色的坐标传递给Shader，这一步是在C#中实现的。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SendPlayerPos</span> :</span> MonoBehaviour &#123;</span><br><span class="line">    <span class="keyword">public</span> Transform player;</span><br><span class="line">    <span class="keyword">public</span> Material blockMat;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Update</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        blockMat.<span class="built_in">SetVector</span> (<span class="string">&quot;_PlayerPos&quot;</span>, player.position);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二步，使用屏幕空间的遮罩纹理，对消融区域进行控制。对角色和镜头之间的片元，进行剔除处理。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">float</span> toCamera = distance(input.positionWS, _WorldSpaceCameraPos);</span><br><span class="line"><span class="built_in">float</span> playerToCamera = distance(<span class="module-access"><span class="module"><span class="identifier">_PlayerPos</span>.</span></span>xyz, _WorldSpaceCameraPos);</span><br><span class="line">                </span><br><span class="line">float2 wcoord = input.positionNDC.xy<span class="operator"> / </span>input.positionNDC.w;</span><br><span class="line"><span class="built_in">float</span> mask = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_ScreenSpaceMaskTex</span>, <span class="params">sampler_ScreenSpaceMaskTex</span>, <span class="params">wcoord</span>)</span>.r;</span><br><span class="line">half4 col = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_MainTex</span>, <span class="params">sampler_MainTex</span>, <span class="params">input</span>.<span class="params">uv</span>)</span>;</span><br><span class="line"><span class="built_in">float</span> gradient = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_NoiseTex</span>, <span class="params">sampler_NoiseTex</span>, <span class="params">input</span>.<span class="params">uv</span>)</span>.r;</span><br><span class="line">                </span><br><span class="line"><span class="keyword">if</span> (toCamera &lt; playerToCamera)</span><br><span class="line">	clip(gradient - mask + (toCamera - _WorkDistance)<span class="operator"> / </span>_WorkDistance);</span><br></pre></td></tr></table></figure>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-11-28/20201128213830.gif" /></p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.1-Dissolve/Shader/1.1.10-Trifox.shader">代码</a></p>
+<h1 id="参考">参考</h1>
+<ul>
+<li>[1] <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d8b535efa9db">Unity Shader -
+消融效果原理与变体</a></li>
+<li>[2] 《Unity Shader入门精要​》</li>
+<li>[3] <a
+target="_blank" rel="noopener" href="https://connect.unity.com/p/unityji-zhu-fen-xiang-trifox-zhong-de-zhe-dang-chu-li-he-rong-jie-zhao-se-qi-shang">Unity技术分享
+|《Trifox》中的遮挡处理和溶解着色器（上）</a></li>
+<li>[4] <a
+target="_blank" rel="noopener" href="http://kylehalladay.com/blog/tutorial/2015/11/10/Dissolve-Shader-Redux.html">A
+Burning Paper Shader</a></li>
+<li>[5] <a
+target="_blank" rel="noopener" href="http://www.codeavarice.com/dev-blog/tutorial-burning-edges-dissolve-shader-in-unity">Tutorial
+- Burning Edges Dissolve Shader in Unity</a></li>
+</ul>
+
+    </div>
+	
+	<div>
+		
+			<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+		
+	</div>
+	
+	<div>
+      
+        
+
+      
+	</div>
+
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Dissolve/" rel="tag"><i class="fa fa-tag"></i> Dissolve</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/28/2020-11-28-%EF%BC%88%E4%B8%80%EF%BC%89%E9%A1%B6%E7%82%B9%E5%8A%A8%E7%94%BB/" rel="prev" title="练习项目(一)：顶点动画">
+      <i class="fa fa-chevron-left"></i> 练习项目(一)：顶点动画
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/29/2020-11-29-%EF%BC%88%E4%B8%89%EF%BC%89%E8%A1%A8%E9%9D%A2%E5%87%B9%E5%87%B8%E6%8A%80%E6%9C%AF/" rel="next" title="练习项目(三)：表面凹凸技术">
+      练习项目(三)：表面凹凸技术 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">1、基本原理实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BE%B9%E7%BC%98%E9%A2%9C%E8%89%B2"><span class="nav-number">4.</span> <span class="nav-text">2、边缘颜色</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%AF%E9%A2%9C%E8%89%B2"><span class="nav-number">4.1.</span> <span class="nav-text">2.1 纯颜色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E9%A2%9C%E8%89%B2%E6%B7%B7%E5%90%88"><span class="nav-number">4.2.</span> <span class="nav-text">2.2 两种颜色混合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%B9%E7%95%8C%E9%A2%9C%E8%89%B2%E6%B7%B7%E5%90%88%E7%89%A9%E4%BD%93%E9%A2%9C%E8%89%B2"><span class="nav-number">4.3.</span> <span class="nav-text">2.3 边界颜色混合物体颜色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%B8%90%E5%8F%98%E7%BA%B9%E7%90%86"><span class="nav-number">4.4.</span> <span class="nav-text">2.4 使用渐变纹理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E%E7%89%B9%E5%AE%9A%E7%82%B9%E5%BC%80%E5%A7%8B%E6%B6%88%E8%9E%8D"><span class="nav-number">5.</span> <span class="nav-text">3、从特定点开始消融</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%88%87%E6%8D%A2"><span class="nav-number">6.</span> <span class="nav-text">4、应用：场景切换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E%E7%89%B9%E5%AE%9A%E6%96%B9%E5%90%91%E5%BC%80%E5%A7%8B%E6%B6%88%E8%9E%8D"><span class="nav-number">7.</span> <span class="nav-text">5、从特定方向开始消融</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%81%B0%E7%83%AC%E9%A3%9E%E6%95%A3%E6%95%88%E6%9E%9C"><span class="nav-number">8.</span> <span class="nav-text">6、灰烬飞散效果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%95%9C%E5%A4%B4%E9%81%AE%E6%8C%A1%E6%B6%88%E8%9E%8D"><span class="nav-number">9.</span> <span class="nav-text">7、镜头遮挡消融</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">10.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="bzyzhang"
+      src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting@master//img/20200330174230.jpg">
+  <p class="site-author-name" itemprop="name">bzyzhang</p>
+  <div class="site-description" itemprop="description">留下一些工作、学习、生活的痕迹</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/bzyzhang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;bzyzhang" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bzyzhang</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">112k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:42</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

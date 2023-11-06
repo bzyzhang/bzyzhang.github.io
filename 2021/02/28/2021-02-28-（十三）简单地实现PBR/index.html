@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"bzyzhang.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述 本文主要参考《Unity Shader 入门精要》中改版后的第18章实现基于物理的渲染。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="练习项目(十三)：简单地实现PBR">
+<meta property="og:url" content="https://bzyzhang.github.io/2021/02/28/2021-02-28-%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%E7%AE%80%E5%8D%95%E5%9C%B0%E5%AE%9E%E7%8E%B0PBR/index.html">
+<meta property="og:site_name" content="白纸一张">
+<meta property="og:description" content="概述 本文主要参考《Unity Shader 入门精要》中改版后的第18章实现基于物理的渲染。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-02-28T07:12:19.000Z">
+<meta property="article:modified_time" content="2021-02-28T07:12:19.000Z">
+<meta property="article:author" content="bzyzhang">
+<meta property="article:tag" content="PBR">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://bzyzhang.github.io/2021/02/28/2021-02-28-%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%E7%AE%80%E5%8D%95%E5%9C%B0%E5%AE%9E%E7%8E%B0PBR/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>练习项目(十三)：简单地实现PBR | 白纸一张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	
+	<a target="_blank" rel="noopener" href="https://github.com/bzyzhang" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+	
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">白纸一张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">三十而立，四十而不惑</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bzyzhang.github.io/2021/02/28/2021-02-28-%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%E7%AE%80%E5%8D%95%E5%9C%B0%E5%AE%9E%E7%8E%B0PBR/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting@master//img/20200330174230.jpg">
+      <meta itemprop="name" content="bzyzhang">
+      <meta itemprop="description" content="留下一些工作、学习、生活的痕迹">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白纸一张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          练习项目(十三)：简单地实现PBR
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-28 15:12:19" itemprop="dateCreated datePublished" datetime="2021-02-28T15:12:19+08:00">2021-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%83%E4%B9%A0%E9%A1%B9%E7%9B%AE/" itemprop="url" rel="index"><span itemprop="name">练习项目</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述">概述</h1>
+<p>本文主要参考《Unity Shader 入门精要》中<a
+target="_blank" rel="noopener" href="http://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_18.pdf">改版后的第18章</a>实现基于物理的渲染。<span id="more"></span>之前有很多次，在学习《Unity
+Shader 入门精要》中的PBR章节和《Learn
+OpenGL》中的PBR章节时，看到很长的推导篇幅，就望而却步，一直没有比较完整地实现一遍PBR。这次静下心来完整地看了一遍《Unity
+Shader 入门精要》中<a
+target="_blank" rel="noopener" href="http://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_18.pdf">改版后的第18章</a>实现基于物理的渲染，发现没有自己想象中的那么复杂。其实基本上都是围绕渲染方程来展开的。这里，不会一步步地推导各种公式、方程，只会给出最终要用到的公式，具体的推导过程，还是推荐看看<a
+target="_blank" rel="noopener" href="http://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_18.pdf">改版后的第18章</a>。</p>
+<h1 id="一公式">一、公式</h1>
+<h2 id="渲染方程">1、渲染方程</h2>
+<p>从整体上来看，都是围绕<strong><em>渲染方程</em></strong>的： <span
+class="math display">\[
+L_o(v)=L_e(v) + \int_{\Omega}
+f(\omega_i,v)L_i{\omega_i}(n\cdot\omega_i)\, d\omega_i
+\]</span> 简单地解释一下上面的公式：给的观察视角<span
+class="math inline">\(v\)</span>，该方向上的出射辐射率<span
+class="math inline">\(L_o(v)\)</span>等于该点向观察方向发出的自发光辐射率<span
+class="math inline">\(L_e(v)\)</span>加上所有有效的入射光<span
+class="math inline">\(L_i(\omega_i)\)</span>到达观察点的辐射率积分和。下图给出了渲染方程各个部分的通俗解释。</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-2-28/20210301115247.png" /></p>
+<p>渲染方程式图形学中的核心公式，当去掉其中的自发光项之后，剩余的部分就是著名的<strong><em>反射等式</em></strong>。我们可以这样理解反射等式：想象我们现在要计算表面上某点的出射辐射率，我们已知到该点的观察方向，该点的出射辐射率是由从许多不同方向的入射辐射率叠加后的结果。其中，<span
+class="math inline">\(f(\omega_i,v)\)</span>表示了不同方向的入射光在该观察方向上的权重分布。我们把这些不同方向的光辐射率（<span
+class="math inline">\((L_i(\omega_i))\)</span>部分）乘以观察方向上所占的权重（<span
+class="math inline">\(f(\omega_i,v)\)</span>部分），再乘以它们在该表面的投影结果（<span
+class="math inline">\((n\cdot\omega_i)\)</span>部分），最后再把这些值加起来（即积分操作）就是最后的出射辐射率。</p>
+<p>在实时渲染中，自发光项通常就是直接加上某个自发光值。除此之外，积分累加部分在实时渲染中也基本无法实现，因此积分部分通常会被若干精确光源的叠加所替代。</p>
+<h2 id="精确光源">2、精确光源</h2>
+<p>对于一个精确光源来说，我们使用<span
+class="math inline">\(l_c\)</span>来表示它的方向，使用<span
+class="math inline">\(c_{light}\)</span>表示它的颜色。使用精确光源的最大好处是，我们可以大大简化上面的反射等式，不用计算积分了。我们可以使用下面的等式来计算它在某个观察方向<span
+class="math inline">\(v\)</span>上的出射辐射率： <span
+class="math display">\[
+L_o(v)=\pi f(l_c,v)c_{light}(n\cdot l_c)
+\]</span>
+和之前使用积分形式的原始公式相比，上面的式子使用一个特定的方向的<span
+class="math inline">\(f(l_c,v)\)</span>值来代替积分操作，这大大简化了计算。如果场景中包含了多个精确光源，我们可以把它们分别代入上面的式子进行计算，然后把它们的结果相加即可。也就是说，反射等式可以简化成下面的形式：
+<span class="math display">\[
+L_o(v)=\sum_{i=0}^{n}L_o^i(v)=\sum_{i=0}^{n}\pi f(l_c^i,v)c_{light}(n
+\cdot l_c^i)
+\]</span> 那么，剩下的问题就是，<span
+class="math inline">\(f(l_c,v)\)</span>项怎么算呢？<span
+class="math inline">\(f(l_c,v)\)</span>实际上描述了当前点事如何与入射光线进行交互的：当给定某个入射方向的入射光后，有多少百分比的光照被反射到了观察方向上。在图形学中，这一项有一个专门的名字，那就是双向反射分布函数，即<strong><em>BRDF</em></strong>。</p>
+<h2 id="brdf">3、BRDF</h2>
+<p>BRDF可以用于描述两种不同的物理现象：表面反射和次表面散射。针对每种现象，BRDF通常会包含一个单独的部分来描述它们。用于描述次表面散射的被称为<strong>漫反射项</strong>，以及用于描述表面反射的部分被称为<strong>高光反射项</strong>。</p>
+<h3 id="漫反射项">（1）漫反射项</h3>
+<p>有很多种实现方式，这里直接给出下面会用到的公式： <span
+class="math display">\[
+f_{diff}(l,v)=\frac{baseColor}{\pi}(1+(F_{D90}-1)(1-n\cdot
+l)^5)(1+(F_{D90}-1)(1-n\cdot v)^5)
+\]</span> 其中： <span class="math display">\[
+F_{D90}=0.5+2*roughness*(h\cdot l)^2
+\]</span> <span
+class="math inline">\(baseColor\)</span>是表面颜色。通常由纹理采样得到，<span
+class="math inline">\(roughness\)</span>是表面的粗糙度。</p>
+<p>在Unity中的实现代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">inline half3 <span class="constructor">CustomDisneyDiffuseTerm(<span class="params">half</span> NdotV, <span class="params">half</span> NdotL, <span class="params">half</span> LdotH, <span class="params">half</span> <span class="params">roughness</span>, <span class="params">half3</span> <span class="params">baseColor</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    half fd90 = <span class="number">0.5</span> + <span class="number">2</span><span class="operator"> * </span>LdotH<span class="operator"> * </span>LdotH<span class="operator"> * </span>roughness;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Two schlick fresnel term</span></span><br><span class="line">    half lightScatter = <span class="number">1</span> + (fd90 - <span class="number">1</span>)<span class="operator"> * </span>pow(<span class="number">1</span> - NdotL, <span class="number">5</span>);</span><br><span class="line">    half viewScatter = <span class="number">1</span> + (fd90 - <span class="number">1</span>)<span class="operator"> * </span>pow(<span class="number">1</span> - NdotV, <span class="number">5</span>);</span><br><span class="line">    </span><br><span class="line">    return baseColor<span class="operator"> * </span>INV_PI<span class="operator"> * </span>lightScatter<span class="operator"> * </span>viewScatter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="高光反射项">（2）高光反射项</h3>
+<p>基于微面元理论，BRDF的高光反射项科研用下面的通用形式来表示： <span
+class="math display">\[
+f_{spec}(l,v)=\frac{F(l,h)G(l,v,h)D(h)}{4*(n \cdot l)(n \cdot v)}
+\]</span> 这就是著名的Torrane-Sparrow微面元模型。</p>
+<p><span
+class="math inline">\(D(h)\)</span>是微面元的法线分布函数，它用于计算有多少比例的微面元的法线满足<span
+class="math inline">\(m=h\)</span>，只有这部分微面元才会把光线从<span
+class="math inline">\(l\)</span>方向反射到<span
+class="math inline">\(v\)</span>方向上。</p>
+<p><span
+class="math inline">\(G(l,v,h)\)</span>是阴影-遮掩函数，它用于计算那些满足<span
+class="math inline">\(m=h\)</span>的微面元中有多少会由于遮挡而不会被人眼看到，因此它给出了活跃的微面元所占的浓度，只有活跃的微面元才会成功地把光线反射到观察方向上。</p>
+<p><span
+class="math inline">\(F(l,h)\)</span>则是这些活跃微面元的菲涅尔反射函数，它可以告诉我们每个活跃的微面元会把多少入射光线反射到观察方向上，即表示了反射光线占入射光线的比率。</p>
+<p>最后，分母<span class="math inline">\(4*(n \cdot l)(n \cdot
+v)\)</span>是用于校正从微面元的局部空间到整体宏观表面数量差异的校正因子。</p>
+<h4 id="a菲涅尔反射函数">a、菲涅尔反射函数</h4>
+<p>大多数PBS实现选择使用Schlick菲涅尔近似等式来得到近似的菲涅尔反射效果：
+<span class="math display">\[
+F_{Schlick}(l,h)=c_{spec} + (1-c_{spec})(1-(l \cdot h))^5
+\]</span> 其中，<span
+class="math inline">\(c_{spec}\)</span>是材质的高光反射颜色。在金属工作流和高光反射工作流中，<span
+class="math inline">\(c_{spec}\)</span>的计算是不同的，这里要注意。</p>
+<p>在Unity中的实现代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">inline half3 <span class="constructor">CustomFresnelTerm(<span class="params">half3</span> <span class="params">c</span>, <span class="params">half</span> <span class="params">cosA</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    half t = pow(<span class="number">1</span> - cosA, <span class="number">5</span>);</span><br><span class="line">    return c + (<span class="number">1</span> - c)<span class="operator"> * </span>t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="b法线分布函数">b、法线分布函数</h4>
+<p>这里选择的法线分布函数是GGX分布，它的公式如下： <span
+class="math display">\[
+D_{GGX}(h)=\frac{\alpha ^ 2}{\pi ((\alpha ^2 -1)(n \cdot h)^2 + 1)^2}
+\]</span> 其中： <span class="math display">\[
+\alpha = roughness^2
+\]</span> <span
+class="math inline">\(roughness\)</span>是与表面粗糙度有关的参数。</p>
+<p>在Unity中的实现代码如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">inline</span> half CustomGGXTerm(half NdotH, half roughness)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attribute">half</span> a2 = roughness * roughness;</span><br><span class="line">    <span class="attribute">half</span> d = (NdotH * a2 - NdotH) * NdotH + <span class="number">1</span>.0f;</span><br><span class="line">    <span class="attribute">return</span> INV_PI * a2 / (d * d + 1e-7f);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的<span
+class="math inline">\(1e-7f\)</span>是为了避免分母为0。</p>
+<h4 id="c阴影-遮挡函数">c、阴影-遮挡函数</h4>
+<p>Unity为基于GGX的PBS模型改用了Smith-Joint阴影-遮挡函数，公式如下：
+<span class="math display">\[
+\frac{G_{smithJoint}(l,v,h)}{(n \cdot l)(n \cdot v)} \approx \frac{2}
+{(n \cdot l)((n \cdot v)(1-\alpha_g)+\alpha_g) + (n \cdot v)((n \cdot
+l)(1-\alpha_g)+\alpha_g)}
+\]</span> 回顾上面高光反射项的公式： <span class="math display">\[
+f_{spec}(l,v)=\frac{F(l,h)G(l,v,h)D(h)}{4*(n \cdot l)(n \cdot v)}
+\]</span>
+可以发现，上面实现的并不单单是G项，还包括了分母的部分。所以上面的就不是纯粹的阴影-遮挡函数了，一般叫做可见性项。</p>
+<p>在Unity中的实现代码如下：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">inline</span> half CustomSmithJointGGXVisibilityTerm(half NdotL, half NdotV, half roughness)</span><br><span class="line">&#123;</span><br><span class="line">    half <span class="built_in">a2</span> = roughness * roughness<span class="comment">;</span></span><br><span class="line">    half lambdaV = NdotL * (NdotV * (<span class="number">1</span> - <span class="built_in">a2</span>) + <span class="built_in">a2</span>)<span class="comment">;</span></span><br><span class="line">    half lambdaL = NdotV * (NdotL * (<span class="number">1</span> - <span class="built_in">a2</span>) + <span class="built_in">a2</span>)<span class="comment">;</span></span><br><span class="line">    </span><br><span class="line">    return <span class="number">0</span>.<span class="number">5</span>f / (lambdaV + lambdaL + <span class="number">1</span>e-<span class="number">5</span>f)<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里可以有些疑惑，代码的实现跟上面的公式不同啊？这是因为，把反射项的分母4也计算在内了。</p>
+<h1 id="二ibl">二、IBL</h1>
+<p>为了得到更加真实的效果，还需要计算基于图形的光照部分（IBL）。</p>
+<p>在Unity中一般是通过反射探针实现的。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//IBL</span></span><br><span class="line">half perceptualRoughness = roughness<span class="operator"> * </span>(<span class="number">1.7</span> - <span class="number">0.7</span><span class="operator"> * </span>roughness);</span><br><span class="line">half mip = perceptualRoughness<span class="operator"> * </span><span class="number">6</span>;</span><br><span class="line">half4 envMap = <span class="constructor">SAMPLE_TEXTURECUBE_LOD(<span class="params">unity_SpecCube0</span>, <span class="params">samplerunity_SpecCube0</span>, <span class="params">reflDirWS</span>, <span class="params">mip</span>)</span>;</span><br><span class="line">half grazingTerm = saturate((<span class="number">1</span> - roughness) + (<span class="number">1</span> - oneMinusReflectivity));</span><br><span class="line">half surfaceReduction = <span class="number">1.0</span><span class="operator"> / </span>(roughness<span class="operator"> * </span>roughness + <span class="number">1.0</span>);</span><br><span class="line">half3 indirectSpecular = surfaceReduction<span class="operator"> * </span>envMap.rgb<span class="operator"> * </span><span class="constructor">CustomFresnelLerp(<span class="params">specColor</span>, <span class="params">grazingTerm</span>, <span class="params">nv</span>)</span>;</span><br></pre></td></tr></table></figure>
+<p>主要就是根据粗糙度对环境贴图进行LOD采样。</p>
+<p>为了给IBL添加更加真实的菲涅尔反射，我们对高光反射颜色和掠射颜色grazingTerm进行菲涅尔插值。除此之外，还使用了由粗糙度计算得到的surfaceReduction参数进一步对IBL进行修正。CustomFresnelLerp函数的代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">inline half3 <span class="constructor">CustomFresnelLerp(<span class="params">half3</span> <span class="params">c0</span>, <span class="params">half3</span> <span class="params">c1</span>, <span class="params">half</span> <span class="params">cosA</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    half t = pow(<span class="number">1</span> - cosA, <span class="number">5</span>);</span><br><span class="line">    return lerp(c0, c1, t);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它的实现和回去实现的CustomFresnelTerm函数很类似，不同的是这里使用参数<span
+class="math inline">\(t\)</span>来混合两个颜色。</p>
+<p>最后，只需要按照渲染方程把所有项加起来即可。</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">half3 col = emissionTerm + PI * (<span class="keyword">diffuseTerm </span>+ specularTerm) * mainLight.color * nl * mainLight.<span class="keyword">distanceAttenuation </span>* mainLight.<span class="keyword">shadowAttenuation</span></span><br><span class="line"><span class="keyword"> </span>               + indirectSpecular;</span><br></pre></td></tr></table></figure>
+<h1 id="三两种工作流">三、两种工作流</h1>
+<p>在Unity实现的PBR中，包含了两种工作流：高光反射工作流、金属工作流。它们之间的区别，只是参数的获取方式不同，最后使用的渲染方程都是上面介绍的。下面分布介绍一下二者。</p>
+<h2 id="高光反射工作流">1、高光反射工作流</h2>
+<p>先看下属性：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">_Color</span> (<span class="string">&quot;Color&quot;</span>, Color) = (<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line"><span class="attribute">_MainTex</span> (<span class="string">&quot;Albedo&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;white&quot;</span> &#123; &#125;</span><br><span class="line"><span class="attribute">_Glossiness</span> (<span class="string">&quot;Smoothness&quot;</span>, Range(<span class="number">0</span>.<span class="number">0</span>, <span class="number">1</span>.<span class="number">0</span>)) = <span class="number">0</span>.<span class="number">5</span></span><br><span class="line"><span class="attribute">_SpecColor</span> (<span class="string">&quot;Specular&quot;</span>, Color) = (<span class="number">0</span>.<span class="number">2</span>, <span class="number">0</span>.<span class="number">2</span>, <span class="number">0</span>.<span class="number">2</span>)</span><br><span class="line"><span class="attribute">_SpecGlossMap</span> (<span class="string">&quot;Specular (RGB) Smoothness (A)&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;white&quot;</span> &#123; &#125;</span><br><span class="line"><span class="attribute">_BumpScale</span> (<span class="string">&quot;Bump Scale&quot;</span>, Float) = <span class="number">1</span>.<span class="number">0</span></span><br><span class="line"><span class="attribute">_BumpMap</span> (<span class="string">&quot;Normal Map&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;bump&quot;</span> &#123; &#125;</span><br><span class="line"><span class="attribute">_EmissionColor</span> (<span class="string">&quot;Color&quot;</span>, Color) = (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"><span class="attribute">_EmissionMap</span> (<span class="string">&quot;Emission&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;white&quot;</span> &#123; &#125;</span><br></pre></td></tr></table></figure>
+<p>比较特别的是，定义了高光反射的颜色和高光反射贴图。光滑值保存在_SpecGlossMap贴图的a通道中。高光颜色由_SpecColor和_SpecGlossMap的rgb通道相乘得到。</p>
+<p>主要计算过程如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">half4 specGloss = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_SpecGlossMap</span>, <span class="params">sampler_SpecGlossMap</span>, <span class="params">input</span>.<span class="params">uv</span>)</span>;</span><br><span class="line">specGloss.a *= _Glossiness;</span><br><span class="line">half3 specColor = <span class="module-access"><span class="module"><span class="identifier">_SpecColor</span>.</span></span>rgb<span class="operator"> * </span>specGloss.rgb;</span><br><span class="line">half roughness = <span class="number">1.0</span> - specGloss.a;</span><br><span class="line"></span><br><span class="line">half oneMinusReflectivity = <span class="number">1.0</span> - max(max(specColor.r, specColor.g), specColor.b);</span><br><span class="line"></span><br><span class="line">half3 albedo = <span class="module-access"><span class="module"><span class="identifier">_Color</span>.</span></span>rgb<span class="operator"> * </span><span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_MainTex</span>, <span class="params">sampler_MainTex</span>, <span class="params">input</span>.<span class="params">uv</span>)</span>.rgb;</span><br><span class="line">half3 diffColor = albedo<span class="operator"> * </span>oneMinusReflectivity;</span><br></pre></td></tr></table></figure>
+<p>然后就是根据公式进行计算。这里不再赘述。</p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/2.1-PBR/Shader/2.1.1-CustomSpecularPBR.shader">代码如下</a></p>
+<h2 id="金属工作流">2、金属工作流</h2>
+<p>属性：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">_Color</span> (<span class="string">&quot;Color&quot;</span>, Color) = (<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line"><span class="attribute">_MainTex</span> (<span class="string">&quot;Albedo&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;white&quot;</span> &#123; &#125;</span><br><span class="line"><span class="attribute">_Glossiness</span> (<span class="string">&quot;Smoothness&quot;</span>, Range(<span class="number">0</span>.<span class="number">0</span>, <span class="number">1</span>.<span class="number">0</span>)) = <span class="number">0</span>.<span class="number">5</span></span><br><span class="line"><span class="attribute">_MetallicGlossMap</span> (<span class="string">&quot;Metallic&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;white&quot;</span> &#123; &#125;</span><br><span class="line"><span class="attribute">_BumpScale</span> (<span class="string">&quot;Bump Scale&quot;</span>, Float) = <span class="number">1</span>.<span class="number">0</span></span><br><span class="line"><span class="attribute">_BumpMap</span> (<span class="string">&quot;Normal Map&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;bump&quot;</span> &#123; &#125;</span><br><span class="line"><span class="attribute">_EmissionColor</span> (<span class="string">&quot;Color&quot;</span>, Color) = (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"><span class="attribute">_EmissionMap</span> (<span class="string">&quot;Emission&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;white&quot;</span> &#123; &#125;</span><br></pre></td></tr></table></figure>
+<p>与上面的高光反射工作流相比，大部分相同，只是使用_MetallicGlossMap代替了高光相关的两项。</p>
+<p>_MetallicGlossMap的r通道保存的是金属值，a通道保存的是光滑值，而高光反射的颜色由kDieletricSpec和albedo通过金属值metallic插值得到。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">half4 metallicMap = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_MetallicGlossMap</span>, <span class="params">sampler_MetallicGlossMap</span>, <span class="params">input</span>.<span class="params">uv</span>)</span>;</span><br><span class="line">half metallic = metallicMap.r;</span><br><span class="line">half smoothness = metallicMap.a<span class="operator"> * </span>_Glossiness;</span><br><span class="line">half roughness = <span class="number">1.0</span> - smoothness;</span><br><span class="line"></span><br><span class="line">half3 albedo = <span class="module-access"><span class="module"><span class="identifier">_Color</span>.</span></span>rgb<span class="operator"> * </span><span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_MainTex</span>, <span class="params">sampler_MainTex</span>, <span class="params">input</span>.<span class="params">uv</span>)</span>.rgb;</span><br><span class="line"></span><br><span class="line">half oneMinusReflectivity = kDieletricSpec.a - metallic<span class="operator"> * </span>kDieletricSpec.a;</span><br><span class="line">half3 diffColor = albedo<span class="operator"> * </span>oneMinusReflectivity;</span><br><span class="line">half3 specColor = lerp(kDieletricSpec.rgb, albedo, metallic);</span><br></pre></td></tr></table></figure>
+<p>kDieletricSpec是URP中的内置变量，可以在Lightin.hlsl中找到：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> kDieletricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04)</span></span><br></pre></td></tr></table></figure>
+<p>其他部分的计算与高光反射工作流都是相同的。</p>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/2.1-PBR/Shader/2.1.2-CustomMetallicPBR.shader">代码如下</a></p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-2-28/20210301115352.png" /></p>
+<h1 id="四总结">四、总结</h1>
+<p>本文主要给出PBR的相关计算公式，然后给出计算代码。这里要注意，这些公式并不是唯一的。</p>
+<p>还是说一下，本文相对来说还是很简单的介绍，建议阅读下面的参考部分。</p>
+<h1 id="参考">参考</h1>
+<ul>
+<li>[1] <a
+target="_blank" rel="noopener" href="http://candycat1992.github.io/unity_shaders_book/unity_shaders_book_chapter_18.pdf">第18章
+基于物理的渲染</a></li>
+<li>[2] <a
+target="_blank" rel="noopener" href="https://learnopengl-cn.github.io/07%20PBR/01%20Theory/">PBR</a></li>
+</ul>
+
+    </div>
+	
+	<div>
+		
+			<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+		
+	</div>
+	
+	<div>
+      
+        
+
+      
+	</div>
+
+
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/PBR/" rel="tag"><i class="fa fa-tag"></i> PBR</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/31/2021-01-31-%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89URP%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E5%90%8E%E5%A4%84%E7%90%86%E5%AE%9E%E4%BE%8B/" rel="prev" title="练习项目(十二)：URP中自定义后处理实例">
+      <i class="fa fa-chevron-left"></i> 练习项目(十二)：URP中自定义后处理实例
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/17/2021-03-17-%E3%80%90%E8%BA%AC%E8%A1%8C%E3%80%91-%E5%9B%B4%E7%BB%95DrawMeshInstancedIndirect%E7%9A%84%E4%B8%80%E4%BA%9B%E5%AE%9E%E9%AA%8C/" rel="next" title="【躬行】-围绕DrawMeshInstancedIndirect的一些实验">
+      【躬行】-围绕DrawMeshInstancedIndirect的一些实验 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E5%85%AC%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">一、公式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%B2%E6%9F%93%E6%96%B9%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">1、渲染方程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B2%BE%E7%A1%AE%E5%85%89%E6%BA%90"><span class="nav-number">2.2.</span> <span class="nav-text">2、精确光源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#brdf"><span class="nav-number">2.3.</span> <span class="nav-text">3、BRDF</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%AB%E5%8F%8D%E5%B0%84%E9%A1%B9"><span class="nav-number">2.3.1.</span> <span class="nav-text">（1）漫反射项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E5%85%89%E5%8F%8D%E5%B0%84%E9%A1%B9"><span class="nav-number">2.3.2.</span> <span class="nav-text">（2）高光反射项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#a%E8%8F%B2%E6%B6%85%E5%B0%94%E5%8F%8D%E5%B0%84%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">a、菲涅尔反射函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#b%E6%B3%95%E7%BA%BF%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">b、法线分布函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c%E9%98%B4%E5%BD%B1-%E9%81%AE%E6%8C%A1%E5%87%BD%E6%95%B0"><span class="nav-number">2.3.2.3.</span> <span class="nav-text">c、阴影-遮挡函数</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8Cibl"><span class="nav-number">3.</span> <span class="nav-text">二、IBL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E4%B8%A4%E7%A7%8D%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">4.</span> <span class="nav-text">三、两种工作流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%85%89%E5%8F%8D%E5%B0%84%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">4.1.</span> <span class="nav-text">1、高光反射工作流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%91%E5%B1%9E%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">4.2.</span> <span class="nav-text">2、金属工作流</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">四、总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="bzyzhang"
+      src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting@master//img/20200330174230.jpg">
+  <p class="site-author-name" itemprop="name">bzyzhang</p>
+  <div class="site-description" itemprop="description">留下一些工作、学习、生活的痕迹</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/bzyzhang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;bzyzhang" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">bzyzhang</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">112k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:42</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

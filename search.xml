@@ -648,145 +648,6 @@ URP的后处理Volume组件</a></li>
       </tags>
   </entry>
   <entry>
-    <title>使用hexo在github上搭建个人博客</title>
-    <url>/2020/03/27/2020-3-27-%E4%BD%BF%E7%94%A8hexo%E5%9C%A8github%E4%B8%8A%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<h1 id="一-软件的安装">一、 软件的安装</h1>
-<h2 id="在github创建个人仓库">1. 在Github创建个人仓库</h2>
-<p>在Github上Create a new repository，需要注意的是，Repository
-name应该为：<code>xxx.github.io</code>，其中<code>xxx</code>是你的用户名。<span id="more"></span></p>
-<h2 id="安装git">2.安装Git</h2>
-<p>这里推荐廖雪峰的官方网站的<a
-href="https://www.liaoxuefeng.com/wiki/896043488029600/896067074338496">Git教程</a></p>
-<p>这里要特别说一下，按照教程操作完成后，还要配置一下ssh：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;你的GitHub注册邮箱&quot;</span></span><br></pre></td></tr></table></figure>
-<p>然后按照提示回车即可，默认不需要设置密码。</p>
-<p>然后找到生成的.ssh文件夹（我的在C:\.ssh）下的id_rsa.pub密钥，将内容全部复制。</p>
-<p>打开<a
-href="https://github.com/settings/keys">Github_settings_keys</a>，新建New
-SSH keys。Titile随便取，Key输入上面复制的id_rsa.pub密钥即可。</p>
-<p>完成后，在Git Bash中检测Github公钥是否设置成功。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh git@github.com</span><br></pre></td></tr></table></figure>
-<p>根据提示，判断设置是否成功。</p>
-<h2 id="安装node.js">3.安装Node.js</h2>
-<p>Node.js的<a
-href="https://nodejs.org/en/download/">下载地址</a>。安装完成后，在CMD命令行输入以下命令检测是否安装成功：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
-<h2 id="安装hexo">4.安装Hexo</h2>
-<p>Hexo就是我们的个人博客网站的框架。首先先建一个文件夹，可以，命名为Hexo，Hexo框架和你以后发布的网页都在这个文件夹。创建好文件后，进入Hexo文件夹，在这里右键，点击Git
-Bash Here选项。</p>
-<p>首先安装Hexo，输入：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli </span><br></pre></td></tr></table></figure>
-<p>估计安装时间较长，请耐心等待。安装完成后，初始化博客：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo init blog</span><br></pre></td></tr></table></figure>
-<p>以上两个命令，都是在Hexo文件夹操作的。</p>
-<p>现在Hexo文件夹下应该有一个blog文件夹，是上面初始化博客的时候生成的。关闭Git
-Bash，进入blog文件夹，右键打开Git
-Bash。现在检测我们的博客雏形了。分别输入以下三条命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;第一个博客&quot;</span></span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-<p>没有错误的话，现在在浏览器中输入网址：</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><span class="line"><span class="attribute">localhost</span>:<span class="number">4000</span></span><br></pre></td></tr></table></figure>
-<p>顺利的话，会看到第一个博客。</p>
-<h2 id="推送网站">5.推送网站</h2>
-<p>上面的操作，只是在本地预览，下面要做的，就是将博客推送到Github远端，从而可以通过互联网访问我们的博客。在进行下一步之前，有一个概念要说一下。</p>
-<p>在blog根目录下面，有一个**_config.yml**文件，被称为站点配置文件。</p>
-<p>进入根目录的themes文件夹，里面也有个**_config.yml<strong>文件，被称为</strong>主题**配置文件。</p>
-<p>下面，我们需要将Hexo与Github关联起来。打开站点配置文件_config.yml，搜索到下面的对应部分进行修改：</p>
-<figure class="highlight dts"><table><tr><td class="code"><pre><span class="line"><span class="symbol">deploy:</span></span><br><span class="line"><span class="symbol">  type:</span> git</span><br><span class="line"><span class="symbol">  repo:</span> 这里填入你之前在GitHub上创建仓库的完整路径</span><br><span class="line"><span class="symbol">  branch:</span> master</span><br></pre></td></tr></table></figure>
-<p>完成之后，保存，在blog文件下加执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-<p>然后，分别输入以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-<p>完成之后，打开浏览器，输入类型<code>xxx.github.io</code>的地址，没有问题的话，可以打开博客了。</p>
-<h1 id="二更换主题">二、更换主题</h1>
-<p>可以在blog目录下的themes文件夹里面查看自己的主题是什么。<a
-href="https://hexo.io/themes/">这里</a>是Hexo的主题合集，一般在主题的Github主页中都会有安装方法的。下面介绍一下更换NexT的主题。在blog目录中执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
-<p>下载完成后，themes文件夹下应该有next文件夹。打开站点配置文件_config_yml，修改主题为NexT：</p>
-<figure class="highlight clean"><table><tr><td class="code"><pre><span class="line"># Extensions</span><br><span class="line">## Plugins: https:<span class="comment">//hexo.io/plugins/</span></span><br><span class="line">## Themes: https:<span class="comment">//hexo.io/themes/</span></span><br><span class="line">theme: next</span><br></pre></td></tr></table></figure>
-<p>然后，打开next的主题配置文件_config.yml。这里可以选择显示方案：</p>
-<figure class="highlight vala"><table><tr><td class="code"><pre><span class="line"><span class="meta"># Schemes</span></span><br><span class="line"><span class="meta">#scheme: Muse</span></span><br><span class="line"><span class="meta">#scheme: Mist</span></span><br><span class="line"><span class="meta">#scheme: Pisces</span></span><br><span class="line">scheme: Gemini</span><br></pre></td></tr></table></figure>
-<p>只需要取消#，即可选择相应的主题（在其他的方案前面要加#）。</p>
-<p>选择好相应的主题之后，可以查找相关资料，装扮我们的博客。</p>
-<h1 id="三数学工具的安装">三、数学工具的安装</h1>
-<p>目前，使用的主题是Hexo的NexT主题。</p>
-<p>NexT 内部提供数学公式渲染的引擎，这样你就不需要自己手动在模板中引入
-JS 或者 CSS； 只需要选择对应的渲染引擎，并在 next/_config.yml 中将其
-enable 选项改为 true 即可。</p>
-<p>需要注意的是，仅仅将 enable
-打开并不能让你看到数学公式，你还需要使用对应的 Hexo 渲染器(Renderer)
-才能真正在博客页面中显示出数学公式。</p>
-<ol type="1">
-<li><p>需要安装<a
-href="https://pandoc.org/installing.html">pandoc</a>。（version &gt;=
-2.0）</p></li>
-<li><p>在blog文件夹，卸载原有的渲染器==hexo-renderer-marked==，再安装==hexo-renderer-pandoc==:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked</span><br><span class="line">npm install hexo-renderer-pandoc</span><br></pre></td></tr></table></figure></li>
-<li><p>在<code>next/_config.yml</code>中将mathjax的enable打开：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">math:</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line">  <span class="attr">mathjax:</span></span><br><span class="line">      <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure></li>
-<li><p>在需要显示公式的文章开头，还需要打开<code>mathjax</code>开关，如下：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">index.html</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2018-07-05 12:01:30</span></span><br><span class="line"><span class="attr">mathjax:</span> <span class="literal">true</span></span><br><span class="line"><span class="string">--</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<h1 id="四源码的管理">四、源码的管理</h1>
-<p>上面使用<code>hexo d</code>命令，只是把hexo生成的博客文件上传到了Github，但是博客的源文件并没有上传上去。下一步，我们将要把博客的源文件上传到Github。</p>
-<p>在浏览器中，打开上面新建的Github仓库。目前，只有一个master分支，我们需要新建一个hexo分支来存储我们的博客源文件。在左侧Branch:master的位置，输入分支的名称，下面会有提示创建新的分支。</p>
-<p>然后，在settings-&gt;Branches-&gt;Default
-branch中，将hexo设为默认分支。</p>
-<p>在新的文件夹中，使用Git Bash将仓库克隆到本地。</p>
-<p>显示隐藏文件，将除了.git文件夹以外的都删除。</p>
-<p>把我们之前的博客源文件全复制过来，除了<code>.deploy_git</code>。这里注意一下，复制过来的源文件应该有一个<code>.gitignore</code>，用来忽略一些不需要的文件，如果没有的话，自己新建一个，内容如下：</p>
-<figure class="highlight x86asm"><table><tr><td class="code"><pre><span class="line"><span class="meta">.DS_Store</span></span><br><span class="line">Thumbs<span class="number">.</span><span class="built_in">db</span></span><br><span class="line"><span class="built_in">db</span><span class="number">.</span>json</span><br><span class="line">*.log</span><br><span class="line">node_modules/</span><br><span class="line"><span class="meta">public</span>/</span><br><span class="line"><span class="meta">.deploy</span>*/</span><br></pre></td></tr></table></figure>
-<p>还要注意一下，如果之前克隆过theme中的主题文件，那么也应该把主题文件中的<code>.git</code>文件夹删除。</p>
-<p>而后，将博客源文件上传到hexo分支。</p>
-<p>这样，更换电脑之后，只要将环境配置好，然后把仓库克隆下来，进入克隆下来的文件夹，先运行<code>hexo clean</code>试试。根据提示进行一些操作即可。<a
-href="https://zhuanlan.zhihu.com/p/44213627">这里</a>有比较详细的步骤可以参考一下，之前做的时候在这一步也耽误了好久。</p>
-<h1 id="五markdown的编辑器">五、Markdown的编辑器</h1>
-<p>测试了markdownpad2、vscode等，最终选择了Typora编辑器。但要注意的是，Typora有一些markdown的扩展功能，需要在文件-&gt;偏好设置里面设置一下，才会有效果，例如==高亮==等。</p>
-<h1 id="六一些有帮助的工具软件">六、一些有帮助的工具软件</h1>
-<ol type="1">
-<li><p>ScreenToGif：截屏，生成动态图的软件。</p></li>
-<li><p>GeoGebra：动态画图软件，可以很方便的得到各种函数的几何图案。</p></li>
-</ol>
-<h1 id="七一些有用的包">七、一些有用的包</h1>
-<ol type="1">
-<li><p>serve</p>
-<p>hexo
-g生成的文件在public文件夹，与网页真正使用的资源文件一致。可以通过打开public里面的网页判断发布的网站是否有问题。</p>
-<p>安装serve：</p>
-<blockquote>
-<p>npm install -g serve</p>
-</blockquote>
-<p>开启serve：</p>
-<blockquote>
-<p>serve</p>
-</blockquote></li>
-</ol>
-<h1 id="参考">参考</h1>
-<ul>
-<li>[1] <a href="https://zhuanlan.zhihu.com/p/26625249">GitHub+Hexo
-搭建个人网站详细教程</a></li>
-<li>[2] <a
-href="https://github.com/wzpan/hexo-renderer-pandoc">hexo-renderer-pandoc</a></li>
-<li>[3] <a
-href="https://github.com/theme-next/hexo-theme-next">hexo-theme-next</a></li>
-<li>[4] <a
-href="https://segmentfault.com/a/1190000009544924">hexo的next主题个性化配置教程</a></li>
-<li>[5] <a
-href="https://blog.csdn.net/mingzhuo_126/article/details/82722455">使用Typora添加数学公式</a></li>
-<li>[6] <a
-href="https://zhuanlan.zhihu.com/p/44213627">hexo超完整的搭建教程，让你拥有一个专属个人博客</a></li>
-<li>[7] <a href="https://github.com/vercel/serve">serve</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>工具</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>github</tag>
-        <tag>博客</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>练习项目(五)：程序化生成多边形</title>
     <url>/2020/12/05/2020-12-05-%EF%BC%88%E4%BA%94%EF%BC%89%E7%A8%8B%E5%BA%8F%E5%8C%96%E7%94%9F%E6%88%90%E5%A4%9A%E8%BE%B9%E5%BD%A2/</url>
     <content><![CDATA[<h1 id="概述">概述</h1>
@@ -1339,6 +1200,145 @@ tube</a></li>
         <tag>Gamma</tag>
         <tag>Linear</tag>
         <tag>sRGB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用hexo在github上搭建个人博客</title>
+    <url>/2020/03/27/2020-3-27-%E4%BD%BF%E7%94%A8hexo%E5%9C%A8github%E4%B8%8A%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<h1 id="一-软件的安装">一、 软件的安装</h1>
+<h2 id="在github创建个人仓库">1. 在Github创建个人仓库</h2>
+<p>在Github上Create a new repository，需要注意的是，Repository
+name应该为：<code>xxx.github.io</code>，其中<code>xxx</code>是你的用户名。<span id="more"></span></p>
+<h2 id="安装git">2.安装Git</h2>
+<p>这里推荐廖雪峰的官方网站的<a
+href="https://www.liaoxuefeng.com/wiki/896043488029600/896067074338496">Git教程</a></p>
+<p>这里要特别说一下，按照教程操作完成后，还要配置一下ssh：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;你的GitHub注册邮箱&quot;</span></span><br></pre></td></tr></table></figure>
+<p>然后按照提示回车即可，默认不需要设置密码。</p>
+<p>然后找到生成的.ssh文件夹（我的在C:\.ssh）下的id_rsa.pub密钥，将内容全部复制。</p>
+<p>打开<a
+href="https://github.com/settings/keys">Github_settings_keys</a>，新建New
+SSH keys。Titile随便取，Key输入上面复制的id_rsa.pub密钥即可。</p>
+<p>完成后，在Git Bash中检测Github公钥是否设置成功。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh git@github.com</span><br></pre></td></tr></table></figure>
+<p>根据提示，判断设置是否成功。</p>
+<h2 id="安装node.js">3.安装Node.js</h2>
+<p>Node.js的<a
+href="https://nodejs.org/en/download/">下载地址</a>。安装完成后，在CMD命令行输入以下命令检测是否安装成功：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
+<h2 id="安装hexo">4.安装Hexo</h2>
+<p>Hexo就是我们的个人博客网站的框架。首先先建一个文件夹，可以，命名为Hexo，Hexo框架和你以后发布的网页都在这个文件夹。创建好文件后，进入Hexo文件夹，在这里右键，点击Git
+Bash Here选项。</p>
+<p>首先安装Hexo，输入：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli </span><br></pre></td></tr></table></figure>
+<p>估计安装时间较长，请耐心等待。安装完成后，初始化博客：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo init blog</span><br></pre></td></tr></table></figure>
+<p>以上两个命令，都是在Hexo文件夹操作的。</p>
+<p>现在Hexo文件夹下应该有一个blog文件夹，是上面初始化博客的时候生成的。关闭Git
+Bash，进入blog文件夹，右键打开Git
+Bash。现在检测我们的博客雏形了。分别输入以下三条命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;第一个博客&quot;</span></span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+<p>没有错误的话，现在在浏览器中输入网址：</p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><span class="line"><span class="attribute">localhost</span>:<span class="number">4000</span></span><br></pre></td></tr></table></figure>
+<p>顺利的话，会看到第一个博客。</p>
+<h2 id="推送网站">5.推送网站</h2>
+<p>上面的操作，只是在本地预览，下面要做的，就是将博客推送到Github远端，从而可以通过互联网访问我们的博客。在进行下一步之前，有一个概念要说一下。</p>
+<p>在blog根目录下面，有一个**_config.yml**文件，被称为站点配置文件。</p>
+<p>进入根目录的themes文件夹，里面也有个**_config.yml<strong>文件，被称为</strong>主题**配置文件。</p>
+<p>下面，我们需要将Hexo与Github关联起来。打开站点配置文件_config.yml，搜索到下面的对应部分进行修改：</p>
+<figure class="highlight dts"><table><tr><td class="code"><pre><span class="line"><span class="symbol">deploy:</span></span><br><span class="line"><span class="symbol">  type:</span> git</span><br><span class="line"><span class="symbol">  repo:</span> 这里填入你之前在GitHub上创建仓库的完整路径</span><br><span class="line"><span class="symbol">  branch:</span> master</span><br></pre></td></tr></table></figure>
+<p>完成之后，保存，在blog文件下加执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<p>然后，分别输入以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<p>完成之后，打开浏览器，输入类型<code>xxx.github.io</code>的地址，没有问题的话，可以打开博客了。</p>
+<h1 id="二更换主题">二、更换主题</h1>
+<p>可以在blog目录下的themes文件夹里面查看自己的主题是什么。<a
+href="https://hexo.io/themes/">这里</a>是Hexo的主题合集，一般在主题的Github主页中都会有安装方法的。下面介绍一下更换NexT的主题。在blog目录中执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+<p>下载完成后，themes文件夹下应该有next文件夹。打开站点配置文件_config_yml，修改主题为NexT：</p>
+<figure class="highlight clean"><table><tr><td class="code"><pre><span class="line"># Extensions</span><br><span class="line">## Plugins: https:<span class="comment">//hexo.io/plugins/</span></span><br><span class="line">## Themes: https:<span class="comment">//hexo.io/themes/</span></span><br><span class="line">theme: next</span><br></pre></td></tr></table></figure>
+<p>然后，打开next的主题配置文件_config.yml。这里可以选择显示方案：</p>
+<figure class="highlight vala"><table><tr><td class="code"><pre><span class="line"><span class="meta"># Schemes</span></span><br><span class="line"><span class="meta">#scheme: Muse</span></span><br><span class="line"><span class="meta">#scheme: Mist</span></span><br><span class="line"><span class="meta">#scheme: Pisces</span></span><br><span class="line">scheme: Gemini</span><br></pre></td></tr></table></figure>
+<p>只需要取消#，即可选择相应的主题（在其他的方案前面要加#）。</p>
+<p>选择好相应的主题之后，可以查找相关资料，装扮我们的博客。</p>
+<h1 id="三数学工具的安装">三、数学工具的安装</h1>
+<p>目前，使用的主题是Hexo的NexT主题。</p>
+<p>NexT 内部提供数学公式渲染的引擎，这样你就不需要自己手动在模板中引入
+JS 或者 CSS； 只需要选择对应的渲染引擎，并在 next/_config.yml 中将其
+enable 选项改为 true 即可。</p>
+<p>需要注意的是，仅仅将 enable
+打开并不能让你看到数学公式，你还需要使用对应的 Hexo 渲染器(Renderer)
+才能真正在博客页面中显示出数学公式。</p>
+<ol type="1">
+<li><p>需要安装<a
+href="https://pandoc.org/installing.html">pandoc</a>。（version &gt;=
+2.0）</p></li>
+<li><p>在blog文件夹，卸载原有的渲染器==hexo-renderer-marked==，再安装==hexo-renderer-pandoc==:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked</span><br><span class="line">npm install hexo-renderer-pandoc</span><br></pre></td></tr></table></figure></li>
+<li><p>在<code>next/_config.yml</code>中将mathjax的enable打开：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">math:</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line">  <span class="attr">mathjax:</span></span><br><span class="line">      <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure></li>
+<li><p>在需要显示公式的文章开头，还需要打开<code>mathjax</code>开关，如下：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">index.html</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2018-07-05 12:01:30</span></span><br><span class="line"><span class="attr">mathjax:</span> <span class="literal">true</span></span><br><span class="line"><span class="string">--</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="四源码的管理">四、源码的管理</h1>
+<p>上面使用<code>hexo d</code>命令，只是把hexo生成的博客文件上传到了Github，但是博客的源文件并没有上传上去。下一步，我们将要把博客的源文件上传到Github。</p>
+<p>在浏览器中，打开上面新建的Github仓库。目前，只有一个master分支，我们需要新建一个hexo分支来存储我们的博客源文件。在左侧Branch:master的位置，输入分支的名称，下面会有提示创建新的分支。</p>
+<p>然后，在settings-&gt;Branches-&gt;Default
+branch中，将hexo设为默认分支。</p>
+<p>在新的文件夹中，使用Git Bash将仓库克隆到本地。</p>
+<p>显示隐藏文件，将除了.git文件夹以外的都删除。</p>
+<p>把我们之前的博客源文件全复制过来，除了<code>.deploy_git</code>。这里注意一下，复制过来的源文件应该有一个<code>.gitignore</code>，用来忽略一些不需要的文件，如果没有的话，自己新建一个，内容如下：</p>
+<figure class="highlight x86asm"><table><tr><td class="code"><pre><span class="line"><span class="meta">.DS_Store</span></span><br><span class="line">Thumbs<span class="number">.</span><span class="built_in">db</span></span><br><span class="line"><span class="built_in">db</span><span class="number">.</span>json</span><br><span class="line">*.log</span><br><span class="line">node_modules/</span><br><span class="line"><span class="meta">public</span>/</span><br><span class="line"><span class="meta">.deploy</span>*/</span><br></pre></td></tr></table></figure>
+<p>还要注意一下，如果之前克隆过theme中的主题文件，那么也应该把主题文件中的<code>.git</code>文件夹删除。</p>
+<p>而后，将博客源文件上传到hexo分支。</p>
+<p>这样，更换电脑之后，只要将环境配置好，然后把仓库克隆下来，进入克隆下来的文件夹，先运行<code>hexo clean</code>试试。根据提示进行一些操作即可。<a
+href="https://zhuanlan.zhihu.com/p/44213627">这里</a>有比较详细的步骤可以参考一下，之前做的时候在这一步也耽误了好久。</p>
+<h1 id="五markdown的编辑器">五、Markdown的编辑器</h1>
+<p>测试了markdownpad2、vscode等，最终选择了Typora编辑器。但要注意的是，Typora有一些markdown的扩展功能，需要在文件-&gt;偏好设置里面设置一下，才会有效果，例如==高亮==等。</p>
+<h1 id="六一些有帮助的工具软件">六、一些有帮助的工具软件</h1>
+<ol type="1">
+<li><p>ScreenToGif：截屏，生成动态图的软件。</p></li>
+<li><p>GeoGebra：动态画图软件，可以很方便的得到各种函数的几何图案。</p></li>
+</ol>
+<h1 id="七一些有用的包">七、一些有用的包</h1>
+<ol type="1">
+<li><p>serve</p>
+<p>hexo
+g生成的文件在public文件夹，与网页真正使用的资源文件一致。可以通过打开public里面的网页判断发布的网站是否有问题。</p>
+<p>安装serve：</p>
+<blockquote>
+<p>npm install -g serve</p>
+</blockquote>
+<p>开启serve：</p>
+<blockquote>
+<p>serve</p>
+</blockquote></li>
+</ol>
+<h1 id="参考">参考</h1>
+<ul>
+<li>[1] <a href="https://zhuanlan.zhihu.com/p/26625249">GitHub+Hexo
+搭建个人网站详细教程</a></li>
+<li>[2] <a
+href="https://github.com/wzpan/hexo-renderer-pandoc">hexo-renderer-pandoc</a></li>
+<li>[3] <a
+href="https://github.com/theme-next/hexo-theme-next">hexo-theme-next</a></li>
+<li>[4] <a
+href="https://segmentfault.com/a/1190000009544924">hexo的next主题个性化配置教程</a></li>
+<li>[5] <a
+href="https://blog.csdn.net/mingzhuo_126/article/details/82722455">使用Typora添加数学公式</a></li>
+<li>[6] <a
+href="https://zhuanlan.zhihu.com/p/44213627">hexo超完整的搭建教程，让你拥有一个专属个人博客</a></li>
+<li>[7] <a href="https://github.com/vercel/serve">serve</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>github</tag>
+        <tag>博客</tag>
       </tags>
   </entry>
   <entry>
@@ -2544,6 +2544,93 @@ href="https://blog.csdn.net/candycat1992/article/details/45577749">【NPR】漫�
       </tags>
   </entry>
   <entry>
+    <title>练习项目(十一)：次表面散射的近似实现</title>
+    <url>/2021/01/30/2021-01-30-%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%E6%AC%A1%E8%A1%A8%E9%9D%A2%E6%95%A3%E5%B0%84%E7%9A%84%E8%BF%91%E4%BC%BC%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<h1 id="概述">概述</h1>
+<p>实时图形中的很多着色模型只考虑光在物体表面的相互作用。但现实世界中，很多物体是半透明的，光射进表面，在材质里散射，然后从与入射点不同的地方退出表面。本文将介绍几种方法，近似实现次表面散射的效果。
+<span id="more"></span></p>
+<h1 id="一urp中的多光源计算">一、URP中的多光源计算</h1>
+<p>在Build
+in渲染管线中，要计算多个光源的贡献，一般的方式是使用两个Pass。可以参考《Unity
+Shader入门精要》第九章。</p>
+<p>但是在URP中，不需要多个Pass，可以在一个Pass中计算。参考URP内置的Lit.shader资源，可以发现计算多光源的方式。</p>
+<figure class="highlight vala"><table><tr><td class="code"><pre><span class="line"><span class="meta">#ifdef _ADDITIONAL_LIGHTS</span></span><br><span class="line">    <span class="keyword">uint</span> pixelLightCount = GetAdditionalLightsCount();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">uint</span> lightIndex = <span class="number">0</span>u; lightIndex &lt; pixelLightCount; ++lightIndex)</span><br><span class="line">    &#123;</span><br><span class="line">        Light light = GetAdditionalLight(lightIndex, inputData.positionWS);</span><br><span class="line">        color += LightingPhysicallyBased(brdfData, light, inputData.normalWS, inputData.viewDirectionWS);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">#endif</span></span><br></pre></td></tr></table></figure>
+<p>主要的思路：使用GetAdditionalLightsCount()方法获得额外的光源数量，然后遍历这些光源；使用GetAdditionalLight()方法获得指定序号的光源信息。然后计算相应光源的贡献，叠加到主光源的贡献上。</p>
+<h1 id="二环绕光照">二、环绕光照</h1>
+<p>使用经典的兰伯特定律计算漫反射时，使用的公式如下： <span
+class="math display">\[
+c_{diffuse} = (c_{light}*m_{diffuse})max(0,n \cdot l)
+\]</span>
+观察上式可以发现，当表面法线和光线的方向垂直时，漫反射提供的照明度为0。</p>
+<p>环绕光照对上述公式进行一定的修改，使得光照环绕在物体的周围。这样，那些原本暗色的地方也会有亮度。</p>
+<p>下面的代码，显示了如何改变漫反射公式：</p>
+<figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">half diffuse = max(<span class="number">0</span>, dot(<span class="name">N</span>, L))<span class="comment">;</span></span><br><span class="line">half wrap_diffuse = max(<span class="number">0</span>, (<span class="name">dot</span>(<span class="name">N</span>, L) + wrap) / (<span class="number">1</span> + wrap))<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>其中，环绕值wrap是范围为<span
+class="math inline">\([0,1]\)</span>的浮点数，控制光照环绕物体的距离。如下图所示：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-1-30/20210130093512.png" /></p>
+<p>当wrap为0时，就是标准的兰伯特反射。观察与y轴的交点，原本照明度为0的情况，随着wrap的变化，交点也在变化，表明照明度不为0了。</p>
+<p>这里需要用到多光源的计算，参考第一部分的内容。</p>
+<p>效果如下：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-1-30/20210130102035.gif" /></p>
+<p><a
+href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.10-Subsurface%20Scattering/Shader/1.10.1-WrapLighting.shader">代码如下</a></p>
+<h1 id="三快速次表面散射">三、快速次表面散射</h1>
+<p>快速次表面散射的实现，主要是根据<a
+href="https://colinbarrebrisebois.com/2011/03/07/gdc-2011-approximating-translucency-for-a-fast-cheap-and-convincing-subsurface-scattering-look/">《Approximating
+Translucency for a Fast, Cheap and Convincing Subsurface Scattering
+Look》</a>实现的。</p>
+<p>主要的思路是：对于不透明材质，光的贡献直接来自光源，相对于光的方向倾斜90度以上的顶点不接受光照（如下左图）；根据演示文稿中提出的模型，半透明材质具有额外的光源贡献，<span
+class="math inline">\(-L\)</span>。从几何上来看，<span
+class="math inline">\(-L\)</span>可以看作是某些光线实际穿过了材质并到达了另一侧（如下右图）。</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-1-30/20210130095922.png" /></p>
+<p>这样，最终的颜色包含两部分，第一部分是正常的照明，另一部分是来自虚拟光源的照明。</p>
+<p>计算虚拟光源照明的公式如下： <span class="math display">\[
+I_{back} = sarutate(V \cdot -&lt;L + N\delta&gt;)^p*s
+\]</span> 其中：</p>
+<ul>
+<li>L是光源的方向；</li>
+<li>V是视线的方向；</li>
+<li>N是法线的方向；</li>
+<li><span
+class="math inline">\(\delta\)</span>是次表面变形参数，该参数迫使向量<span
+class="math inline">\(-L\)</span>指向<span
+class="math inline">\(N\)</span>；</li>
+<li>p（功率）和s（比例）用来改变曲线的属性</li>
+</ul>
+<p>最终的效果如下所示：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-1-30/20210130102809.png" /></p>
+<p><a
+href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.10-Subsurface%20Scattering/Shader/1.10.2-FastSSS.shader">代码如下</a></p>
+<h1 id="四总结">四、总结</h1>
+<p>本文介绍了两种对次表面散射的近似方法，只是一种近似方法，可能不太适合真实物体渲染。如果需要更详细的介绍，可以参考下面的参考内容。</p>
+<h1 id="参考">参考</h1>
+<ul>
+<li>[1] <a
+href="https://developer.nvidia.com/gpugems/gpugems/part-iii-materials/chapter-16-real-time-approximations-subsurface-scattering">Chapter
+16. Real-Time Approximations to Subsurface Scattering</a></li>
+<li>[2] <a
+href="https://gameinstitute.qq.com/community/detail/106613">Unity3D教程：次表面散射的简单实现</a></li>
+<li>[3] <a
+href="https://www.alanzucconi.com/2017/08/30/fast-subsurface-scattering-1/">Fast
+Subsurface Scattering in Unity</a></li>
+<li>[4] <a
+href="https://colinbarrebrisebois.com/2011/03/07/gdc-2011-approximating-translucency-for-a-fast-cheap-and-convincing-subsurface-scattering-look/">GDC
+2011 – Approximating Translucency for a Fast, Cheap and Convincing
+Subsurface Scattering Look</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>练习项目</category>
+      </categories>
+      <tags>
+        <tag>Subsurface Scattering</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>练习项目(十二)：URP中自定义后处理实例</title>
     <url>/2021/01/31/2021-01-31-%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89URP%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E5%90%8E%E5%A4%84%E7%90%86%E5%AE%9E%E4%BE%8B/</url>
     <content><![CDATA[<h1 id="概述">概述</h1>
@@ -2666,93 +2753,6 @@ href="https://learnopengl-cn.github.io/05%20Advanced%20Lighting/07%20Bloom/">泛
       </categories>
       <tags>
         <tag>Post Processing</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>练习项目(十一)：次表面散射的近似实现</title>
-    <url>/2021/01/30/2021-01-30-%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%E6%AC%A1%E8%A1%A8%E9%9D%A2%E6%95%A3%E5%B0%84%E7%9A%84%E8%BF%91%E4%BC%BC%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<h1 id="概述">概述</h1>
-<p>实时图形中的很多着色模型只考虑光在物体表面的相互作用。但现实世界中，很多物体是半透明的，光射进表面，在材质里散射，然后从与入射点不同的地方退出表面。本文将介绍几种方法，近似实现次表面散射的效果。
-<span id="more"></span></p>
-<h1 id="一urp中的多光源计算">一、URP中的多光源计算</h1>
-<p>在Build
-in渲染管线中，要计算多个光源的贡献，一般的方式是使用两个Pass。可以参考《Unity
-Shader入门精要》第九章。</p>
-<p>但是在URP中，不需要多个Pass，可以在一个Pass中计算。参考URP内置的Lit.shader资源，可以发现计算多光源的方式。</p>
-<figure class="highlight vala"><table><tr><td class="code"><pre><span class="line"><span class="meta">#ifdef _ADDITIONAL_LIGHTS</span></span><br><span class="line">    <span class="keyword">uint</span> pixelLightCount = GetAdditionalLightsCount();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">uint</span> lightIndex = <span class="number">0</span>u; lightIndex &lt; pixelLightCount; ++lightIndex)</span><br><span class="line">    &#123;</span><br><span class="line">        Light light = GetAdditionalLight(lightIndex, inputData.positionWS);</span><br><span class="line">        color += LightingPhysicallyBased(brdfData, light, inputData.normalWS, inputData.viewDirectionWS);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">#endif</span></span><br></pre></td></tr></table></figure>
-<p>主要的思路：使用GetAdditionalLightsCount()方法获得额外的光源数量，然后遍历这些光源；使用GetAdditionalLight()方法获得指定序号的光源信息。然后计算相应光源的贡献，叠加到主光源的贡献上。</p>
-<h1 id="二环绕光照">二、环绕光照</h1>
-<p>使用经典的兰伯特定律计算漫反射时，使用的公式如下： <span
-class="math display">\[
-c_{diffuse} = (c_{light}*m_{diffuse})max(0,n \cdot l)
-\]</span>
-观察上式可以发现，当表面法线和光线的方向垂直时，漫反射提供的照明度为0。</p>
-<p>环绕光照对上述公式进行一定的修改，使得光照环绕在物体的周围。这样，那些原本暗色的地方也会有亮度。</p>
-<p>下面的代码，显示了如何改变漫反射公式：</p>
-<figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">half diffuse = max(<span class="number">0</span>, dot(<span class="name">N</span>, L))<span class="comment">;</span></span><br><span class="line">half wrap_diffuse = max(<span class="number">0</span>, (<span class="name">dot</span>(<span class="name">N</span>, L) + wrap) / (<span class="number">1</span> + wrap))<span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<p>其中，环绕值wrap是范围为<span
-class="math inline">\([0,1]\)</span>的浮点数，控制光照环绕物体的距离。如下图所示：</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-1-30/20210130093512.png" /></p>
-<p>当wrap为0时，就是标准的兰伯特反射。观察与y轴的交点，原本照明度为0的情况，随着wrap的变化，交点也在变化，表明照明度不为0了。</p>
-<p>这里需要用到多光源的计算，参考第一部分的内容。</p>
-<p>效果如下：</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-1-30/20210130102035.gif" /></p>
-<p><a
-href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.10-Subsurface%20Scattering/Shader/1.10.1-WrapLighting.shader">代码如下</a></p>
-<h1 id="三快速次表面散射">三、快速次表面散射</h1>
-<p>快速次表面散射的实现，主要是根据<a
-href="https://colinbarrebrisebois.com/2011/03/07/gdc-2011-approximating-translucency-for-a-fast-cheap-and-convincing-subsurface-scattering-look/">《Approximating
-Translucency for a Fast, Cheap and Convincing Subsurface Scattering
-Look》</a>实现的。</p>
-<p>主要的思路是：对于不透明材质，光的贡献直接来自光源，相对于光的方向倾斜90度以上的顶点不接受光照（如下左图）；根据演示文稿中提出的模型，半透明材质具有额外的光源贡献，<span
-class="math inline">\(-L\)</span>。从几何上来看，<span
-class="math inline">\(-L\)</span>可以看作是某些光线实际穿过了材质并到达了另一侧（如下右图）。</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-1-30/20210130095922.png" /></p>
-<p>这样，最终的颜色包含两部分，第一部分是正常的照明，另一部分是来自虚拟光源的照明。</p>
-<p>计算虚拟光源照明的公式如下： <span class="math display">\[
-I_{back} = sarutate(V \cdot -&lt;L + N\delta&gt;)^p*s
-\]</span> 其中：</p>
-<ul>
-<li>L是光源的方向；</li>
-<li>V是视线的方向；</li>
-<li>N是法线的方向；</li>
-<li><span
-class="math inline">\(\delta\)</span>是次表面变形参数，该参数迫使向量<span
-class="math inline">\(-L\)</span>指向<span
-class="math inline">\(N\)</span>；</li>
-<li>p（功率）和s（比例）用来改变曲线的属性</li>
-</ul>
-<p>最终的效果如下所示：</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2021-1-30/20210130102809.png" /></p>
-<p><a
-href="https://github.com/bzyzhang/RoadOfShader/blob/main/Assets/1.10-Subsurface%20Scattering/Shader/1.10.2-FastSSS.shader">代码如下</a></p>
-<h1 id="四总结">四、总结</h1>
-<p>本文介绍了两种对次表面散射的近似方法，只是一种近似方法，可能不太适合真实物体渲染。如果需要更详细的介绍，可以参考下面的参考内容。</p>
-<h1 id="参考">参考</h1>
-<ul>
-<li>[1] <a
-href="https://developer.nvidia.com/gpugems/gpugems/part-iii-materials/chapter-16-real-time-approximations-subsurface-scattering">Chapter
-16. Real-Time Approximations to Subsurface Scattering</a></li>
-<li>[2] <a
-href="https://gameinstitute.qq.com/community/detail/106613">Unity3D教程：次表面散射的简单实现</a></li>
-<li>[3] <a
-href="https://www.alanzucconi.com/2017/08/30/fast-subsurface-scattering-1/">Fast
-Subsurface Scattering in Unity</a></li>
-<li>[4] <a
-href="https://colinbarrebrisebois.com/2011/03/07/gdc-2011-approximating-translucency-for-a-fast-cheap-and-convincing-subsurface-scattering-look/">GDC
-2011 – Approximating Translucency for a Fast, Cheap and Convincing
-Subsurface Scattering Look</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>练习项目</category>
-      </categories>
-      <tags>
-        <tag>Subsurface Scattering</tag>
       </tags>
   </entry>
   <entry>

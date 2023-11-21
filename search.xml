@@ -1093,116 +1093,6 @@ href="https://zhuanlan.zhihu.com/p/158462351">Shader实验室：frac函数</a></
       </tags>
   </entry>
   <entry>
-    <title>令人迷惑的Gamma</title>
-    <url>/2020/04/19/2020-4-19-%E4%BB%A4%E4%BA%BA%E8%BF%B7%E6%83%91%E7%9A%84Gamma/</url>
-    <content><![CDATA[<h1 id="概述">概述</h1>
-<p>首先我想说，接触到Gamma的概念也很长时间了，一直没有认真的去学习它。知其然而不知其所以然。最近恰巧学到了<a
-href="https://learnopengl-cn.github.io/05%20Advanced%20Lighting/02%20Gamma%20Correction/">这一部分</a>，就想彻底地搞懂它。<span id="more"></span></p>
-<h1 id="crt">CRT</h1>
-<p>说起Gamma，肯定离不开CRT（阴极射线管）。</p>
-<p>CRT（阴极射线管）是大多数计算机显示器、视频监视器、电视接收器和示波器中使用的显示设备，由德国科学家
-Karl Ferdinand
-Braun于1897年发明。它的特点是荧光屏被加热的阴极发射的电子束照射时发出可见光。电子被集中在一束光中，这束光在磁场的作用下发生偏转，扫描被磷光材料覆盖的观察端(阳极)。当电子撞击这种材料时，就会发出光来。
-在电视阴极射线管(CRT)中，整个显像管区域以一种固定的模式被扫描，这种模式被称为光栅。通过视频信号调节电子束的强度，就可以产生一幅图像。在现代的电视机中，电子束是通过一个磁轭(一组由电子电路驱动的线圈)作用在电子管颈上的磁场来扫描的。彩色阴极射线管使用三种不同的材料，分别发出绿色、蓝色和红色的光，紧密地排列在条状(在孔径格栅设计中)或簇状(在荫罩阴极射线管中)。有三支电子枪，每种颜色一支，每支电子枪只能打到一种颜色的点。</p>
-<p>在电视的早期，人们发现阴极射线管不会产生与输入电压成比例的光强。视频信号与阴极射线管产生的光(传递函数)之间的关系是非线性的，通常用幂定律来描述:
-<span class="math display">\[
-Light \quad intensity = Volt^{\gamma}
-\]</span> Gamma(γ)的值为2.8 (PAL和SECAM制式)或2.2
-(NTSC)。传递函数通常被称为曲线。<strong>它是由电子枪内部的静电效应引起的</strong>。这种关系的图形，如下所示：</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420090445.jpg" /></p>
-<p>按照这种关系，最后屏幕上显示的亮度会比预期中的更暗。</p>
-<p>比如如果是线性关系的话，50%亮度的入射光应该输出50%的亮度；但是按照这个指数关系，<span
-class="math inline">\(50 \%^{2.2} = 21.8
-\%\)</span>，实际上在CRT显示器上只会输出21.8%的亮度，还不到预期亮度的一半！</p>
-<h1 id="gamma编码">Gamma编码</h1>
-<p>人们发现了CRT的问题，必然要想办法解决。</p>
-<p>可以想到的一种解决方法是，改变CRT显示器，使其可以线性输出。但当时已经存在很多的CRT显示器，重新改造的话，不是很现实。考虑到当时的情况，图像采集设备，例如相机，并不是很多，能不能对其进行改良，来解决CRT的Gamma问题呢？答案是肯定的。</p>
-<p>图形采集设备，采集到的现实中的亮度，是线性的。在需要将采集到的数据存储之前，可以进行Gamma编码，它也符合幂定律：
-<span class="math display">\[
-V_{encode} = V_{Linear}^{\frac{1}{\gamma}}
-\]</span> 用图像表示这种关系的话，如下：</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420092149.jpg" /></p>
-<p>问题来了，这样为什么可以解决CRT的Gamma问题呢？</p>
-<p>从数学上来看，存储图像时，要进行的操作是： <span
-class="math display">\[
-V_{encode} = V_{linear}^{\frac{1}{\gamma}}
-\]</span></p>
-<p>将图像显示到屏幕上，要进行的操作是： <span class="math display">\[
-V_{linear} = V_{encode}^{\gamma}
-\]</span> 所以，最后屏幕上输出的，是线性的。这个过程如下图所示：</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420091041.jpg" /></p>
-<p>这样，就可以解决CRT的Gamma问题了。</p>
-<p>许多文章提到Gamma编码与人类视觉对亮度的非线性响应有关。这是不准确的。</p>
-<p>这种混淆很可能源于Gamma编码(大约<span
-class="math inline">\(x^{0.45}\)</span>)和人类视觉(大约<span
-class="math inline">\(x^{0.42}\)</span>)之间非常相似的指数关系——但这只是巧合。</p>
-<p>话虽如此，这种类似的关系确实有一个显著的好处。由于Gamma编码重新分配的色调水平更接近我们的眼睛如何感知它们，我们对暗部的表达更精细，而对亮部的表达会比较简单。</p>
-<p><strong>这是因为人类的视觉对暗部的变化比亮部的变化更敏感</strong>。通过以与我们的视觉系统相匹配的方式对数据进行编码，色调值可以更有效地分布。换句话说，在亮部，我们很难看到细微的差别；然而，在暗部，我们却能探测到同样的绝对变化。因此，即使在更高的亮度级别上有更少的色调，我们也不会感知到任何差异。</p>
-<p>所以，同等带宽/存储空间的前提下，尽量存储更多的暗部的信息可以给人带来更多的信息量。</p>
-<p>Gamma编码的图形表示如下。可以看到，在输入x比较低的时候，y有更大的增长性；而在x比较大的时候，y的增长性就比较平缓了。所以我们可以使用更多的空间来处理暗部的信息。</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420092149.jpg" /></p>
-<p><strong>重要的是要记住，这不是我们Gamma编码图像的原因，只是一个有趣的副作用。</strong></p>
-<h1 id="srgb-standard-red-green-blue">sRGB (standard Red Green
-Blue)</h1>
-<p>sRGB是一个彩色空间，是当今消费电子设备，事实上的标准，包括显示器、数码相机、扫描仪、打印机和手持设备。它也是互联网上图像的标准颜色空间。</p>
-<p>sRGB规范定义了使用什么Gamma来对sRGB图像进行编码和解码。sRGB的Gamma非常接近标准Gamma2.2。</p>
-<p>因为显示器总是在sRGB空间中显示应用了Gamma的颜色，无论什么时候当你在计算机上绘制、编辑或者画出一个图片的时候，你所选的颜色都是根据你在显示器上看到的那种。这实际意味着所有你创建或编辑的图片并不是在线性空间，而是在sRGB空间中，假如在你的屏幕上对红色翻一倍，就是根据你所感知到的亮度进行的，并不等于将红色元素加倍。</p>
-<p>这里考虑两种情况，一种情况是，图像是图像采集设备（如相机）产生的；另一种情况是，图像是美术工作者在计算机上画出来的。</p>
-<p>对于前者，设备采集到图像后，会对线性的图像进行Gamma编码，即应用<span
-class="math inline">\(V_{encode} =
-V_{linear}^{\gamma}\)</span>的幂函数关系映射。这里，<span
-class="math inline">\(\gamma\)</span>约等于0.45（<span
-class="math inline">\(1/2.2\)</span>）。此时，图像就存储在sRGB空间中。</p>
-<p>对于后者，当美术工作者在计算机上作图时，并不是在线性空间中，而是在sRGB空间中。</p>
-<h1 id="gamma工作流">Gamma工作流</h1>
-<p>尽管有这些好处，Gamma编码还是在记录和显示图像的过程中，增加了一层复杂性。一个Gamma编码的图像在屏幕上显示时，必须有Gamma解码，它被视为有效的转换为原始场景的效果。换句话说，Gamma编码的目的是记录图像，而不是显示图像。幸运的是，这第二步(“Gamma解码”)是由显示器和视频卡自动执行。下图说明了所有这些是如何组合在一起的：</p>
-<p><img
-src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420091140.png" /></p>
-<ol type="1">
-<li>图像<span
-class="math inline">\(\gamma\)</span>：当捕获的图像转换为标准的JPEG或TIFF文件时，相机或原始开发软件都会应用这种方法。它将相机的固有色调重新分配为更一致的色调，从而最有效地利用给定的位深度。</li>
-<li>显示<span
-class="math inline">\(\gamma\)</span>：这指的是你的显卡和显示设备的净影响，所以它实际上可能是由几个Gamma组成的。显示<span
-class="math inline">\(\gamma\)</span>的主要目的是补偿文件的Gamma，从而确保图像在屏幕上显示时不会不真实地变亮。较高的显示<span
-class="math inline">\(\gamma\)</span>导致更黑暗的图像与更大的对比度。</li>
-<li>系统<span
-class="math inline">\(\gamma\)</span>：这表示应用于图像的所有Gamma值的净效果，也称为“查看Gamma”。为了忠实地再现场景，这应该接近于一条直线(Gamma
-=
-1.0)。一条直线确保输入(原始场景)与输出(屏幕或打印中显示的灯光)相同。然而，为了提高对比度，系统Gamma有时设置略大于1.0。这有助于弥补由于显示设备的动态范围，或由于非理想的观看条件和图像耀斑所造成的限制。</li>
-</ol>
-<h1 id="参考">参考</h1>
-<ul>
-<li>[1] <a
-href="https://learnopengl.com/Advanced-Lighting/Gamma-Correction">Gamma
-Correction</a></li>
-<li>[2] <a
-href="https://www.japanistry.com/understanding-gamma-in-photography/">Understanding
-Gamma in Photography</a></li>
-<li>[3] <a
-href="http://blog.johnnovak.net/2016/09/21/what-every-coder-should-know-about-gamma/">What
-every coder should know about gamma</a></li>
-<li>[4] <a
-href="https://www.cambridgeincolour.com/tutorials/gamma-correction.htm">UNDERSTANDING
-GAMMA CORRECTION</a></li>
-<li>[5] <a
-href="https://en.wikipedia.org/wiki/Cathode-ray_tube">Cathode-ray
-tube</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>图形学</category>
-      </categories>
-      <tags>
-        <tag>Gamma</tag>
-        <tag>Linear</tag>
-        <tag>sRGB</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用hexo在github上搭建个人博客</title>
     <url>/2020/03/27/2020-3-27-%E4%BD%BF%E7%94%A8hexo%E5%9C%A8github%E4%B8%8A%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<h1 id="一-软件的安装">一、 软件的安装</h1>
@@ -1807,6 +1697,116 @@ Graphics”</p></li>
       <tags>
         <tag>Transformation</tag>
         <tag>Matrices</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>令人迷惑的Gamma</title>
+    <url>/2020/04/19/2020-4-19-%E4%BB%A4%E4%BA%BA%E8%BF%B7%E6%83%91%E7%9A%84Gamma/</url>
+    <content><![CDATA[<h1 id="概述">概述</h1>
+<p>首先我想说，接触到Gamma的概念也很长时间了，一直没有认真的去学习它。知其然而不知其所以然。最近恰巧学到了<a
+href="https://learnopengl-cn.github.io/05%20Advanced%20Lighting/02%20Gamma%20Correction/">这一部分</a>，就想彻底地搞懂它。<span id="more"></span></p>
+<h1 id="crt">CRT</h1>
+<p>说起Gamma，肯定离不开CRT（阴极射线管）。</p>
+<p>CRT（阴极射线管）是大多数计算机显示器、视频监视器、电视接收器和示波器中使用的显示设备，由德国科学家
+Karl Ferdinand
+Braun于1897年发明。它的特点是荧光屏被加热的阴极发射的电子束照射时发出可见光。电子被集中在一束光中，这束光在磁场的作用下发生偏转，扫描被磷光材料覆盖的观察端(阳极)。当电子撞击这种材料时，就会发出光来。
+在电视阴极射线管(CRT)中，整个显像管区域以一种固定的模式被扫描，这种模式被称为光栅。通过视频信号调节电子束的强度，就可以产生一幅图像。在现代的电视机中，电子束是通过一个磁轭(一组由电子电路驱动的线圈)作用在电子管颈上的磁场来扫描的。彩色阴极射线管使用三种不同的材料，分别发出绿色、蓝色和红色的光，紧密地排列在条状(在孔径格栅设计中)或簇状(在荫罩阴极射线管中)。有三支电子枪，每种颜色一支，每支电子枪只能打到一种颜色的点。</p>
+<p>在电视的早期，人们发现阴极射线管不会产生与输入电压成比例的光强。视频信号与阴极射线管产生的光(传递函数)之间的关系是非线性的，通常用幂定律来描述:
+<span class="math display">\[
+Light \quad intensity = Volt^{\gamma}
+\]</span> Gamma(γ)的值为2.8 (PAL和SECAM制式)或2.2
+(NTSC)。传递函数通常被称为曲线。<strong>它是由电子枪内部的静电效应引起的</strong>。这种关系的图形，如下所示：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420090445.jpg" /></p>
+<p>按照这种关系，最后屏幕上显示的亮度会比预期中的更暗。</p>
+<p>比如如果是线性关系的话，50%亮度的入射光应该输出50%的亮度；但是按照这个指数关系，<span
+class="math inline">\(50 \%^{2.2} = 21.8
+\%\)</span>，实际上在CRT显示器上只会输出21.8%的亮度，还不到预期亮度的一半！</p>
+<h1 id="gamma编码">Gamma编码</h1>
+<p>人们发现了CRT的问题，必然要想办法解决。</p>
+<p>可以想到的一种解决方法是，改变CRT显示器，使其可以线性输出。但当时已经存在很多的CRT显示器，重新改造的话，不是很现实。考虑到当时的情况，图像采集设备，例如相机，并不是很多，能不能对其进行改良，来解决CRT的Gamma问题呢？答案是肯定的。</p>
+<p>图形采集设备，采集到的现实中的亮度，是线性的。在需要将采集到的数据存储之前，可以进行Gamma编码，它也符合幂定律：
+<span class="math display">\[
+V_{encode} = V_{Linear}^{\frac{1}{\gamma}}
+\]</span> 用图像表示这种关系的话，如下：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420092149.jpg" /></p>
+<p>问题来了，这样为什么可以解决CRT的Gamma问题呢？</p>
+<p>从数学上来看，存储图像时，要进行的操作是： <span
+class="math display">\[
+V_{encode} = V_{linear}^{\frac{1}{\gamma}}
+\]</span></p>
+<p>将图像显示到屏幕上，要进行的操作是： <span class="math display">\[
+V_{linear} = V_{encode}^{\gamma}
+\]</span> 所以，最后屏幕上输出的，是线性的。这个过程如下图所示：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420091041.jpg" /></p>
+<p>这样，就可以解决CRT的Gamma问题了。</p>
+<p>许多文章提到Gamma编码与人类视觉对亮度的非线性响应有关。这是不准确的。</p>
+<p>这种混淆很可能源于Gamma编码(大约<span
+class="math inline">\(x^{0.45}\)</span>)和人类视觉(大约<span
+class="math inline">\(x^{0.42}\)</span>)之间非常相似的指数关系——但这只是巧合。</p>
+<p>话虽如此，这种类似的关系确实有一个显著的好处。由于Gamma编码重新分配的色调水平更接近我们的眼睛如何感知它们，我们对暗部的表达更精细，而对亮部的表达会比较简单。</p>
+<p><strong>这是因为人类的视觉对暗部的变化比亮部的变化更敏感</strong>。通过以与我们的视觉系统相匹配的方式对数据进行编码，色调值可以更有效地分布。换句话说，在亮部，我们很难看到细微的差别；然而，在暗部，我们却能探测到同样的绝对变化。因此，即使在更高的亮度级别上有更少的色调，我们也不会感知到任何差异。</p>
+<p>所以，同等带宽/存储空间的前提下，尽量存储更多的暗部的信息可以给人带来更多的信息量。</p>
+<p>Gamma编码的图形表示如下。可以看到，在输入x比较低的时候，y有更大的增长性；而在x比较大的时候，y的增长性就比较平缓了。所以我们可以使用更多的空间来处理暗部的信息。</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420092149.jpg" /></p>
+<p><strong>重要的是要记住，这不是我们Gamma编码图像的原因，只是一个有趣的副作用。</strong></p>
+<h1 id="srgb-standard-red-green-blue">sRGB (standard Red Green
+Blue)</h1>
+<p>sRGB是一个彩色空间，是当今消费电子设备，事实上的标准，包括显示器、数码相机、扫描仪、打印机和手持设备。它也是互联网上图像的标准颜色空间。</p>
+<p>sRGB规范定义了使用什么Gamma来对sRGB图像进行编码和解码。sRGB的Gamma非常接近标准Gamma2.2。</p>
+<p>因为显示器总是在sRGB空间中显示应用了Gamma的颜色，无论什么时候当你在计算机上绘制、编辑或者画出一个图片的时候，你所选的颜色都是根据你在显示器上看到的那种。这实际意味着所有你创建或编辑的图片并不是在线性空间，而是在sRGB空间中，假如在你的屏幕上对红色翻一倍，就是根据你所感知到的亮度进行的，并不等于将红色元素加倍。</p>
+<p>这里考虑两种情况，一种情况是，图像是图像采集设备（如相机）产生的；另一种情况是，图像是美术工作者在计算机上画出来的。</p>
+<p>对于前者，设备采集到图像后，会对线性的图像进行Gamma编码，即应用<span
+class="math inline">\(V_{encode} =
+V_{linear}^{\gamma}\)</span>的幂函数关系映射。这里，<span
+class="math inline">\(\gamma\)</span>约等于0.45（<span
+class="math inline">\(1/2.2\)</span>）。此时，图像就存储在sRGB空间中。</p>
+<p>对于后者，当美术工作者在计算机上作图时，并不是在线性空间中，而是在sRGB空间中。</p>
+<h1 id="gamma工作流">Gamma工作流</h1>
+<p>尽管有这些好处，Gamma编码还是在记录和显示图像的过程中，增加了一层复杂性。一个Gamma编码的图像在屏幕上显示时，必须有Gamma解码，它被视为有效的转换为原始场景的效果。换句话说，Gamma编码的目的是记录图像，而不是显示图像。幸运的是，这第二步(“Gamma解码”)是由显示器和视频卡自动执行。下图说明了所有这些是如何组合在一起的：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting//img/2020-4-19/20200420091140.png" /></p>
+<ol type="1">
+<li>图像<span
+class="math inline">\(\gamma\)</span>：当捕获的图像转换为标准的JPEG或TIFF文件时，相机或原始开发软件都会应用这种方法。它将相机的固有色调重新分配为更一致的色调，从而最有效地利用给定的位深度。</li>
+<li>显示<span
+class="math inline">\(\gamma\)</span>：这指的是你的显卡和显示设备的净影响，所以它实际上可能是由几个Gamma组成的。显示<span
+class="math inline">\(\gamma\)</span>的主要目的是补偿文件的Gamma，从而确保图像在屏幕上显示时不会不真实地变亮。较高的显示<span
+class="math inline">\(\gamma\)</span>导致更黑暗的图像与更大的对比度。</li>
+<li>系统<span
+class="math inline">\(\gamma\)</span>：这表示应用于图像的所有Gamma值的净效果，也称为“查看Gamma”。为了忠实地再现场景，这应该接近于一条直线(Gamma
+=
+1.0)。一条直线确保输入(原始场景)与输出(屏幕或打印中显示的灯光)相同。然而，为了提高对比度，系统Gamma有时设置略大于1.0。这有助于弥补由于显示设备的动态范围，或由于非理想的观看条件和图像耀斑所造成的限制。</li>
+</ol>
+<h1 id="参考">参考</h1>
+<ul>
+<li>[1] <a
+href="https://learnopengl.com/Advanced-Lighting/Gamma-Correction">Gamma
+Correction</a></li>
+<li>[2] <a
+href="https://www.japanistry.com/understanding-gamma-in-photography/">Understanding
+Gamma in Photography</a></li>
+<li>[3] <a
+href="http://blog.johnnovak.net/2016/09/21/what-every-coder-should-know-about-gamma/">What
+every coder should know about gamma</a></li>
+<li>[4] <a
+href="https://www.cambridgeincolour.com/tutorials/gamma-correction.htm">UNDERSTANDING
+GAMMA CORRECTION</a></li>
+<li>[5] <a
+href="https://en.wikipedia.org/wiki/Cathode-ray_tube">Cathode-ray
+tube</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>图形学</category>
+      </categories>
+      <tags>
+        <tag>Gamma</tag>
+        <tag>Linear</tag>
+        <tag>sRGB</tag>
       </tags>
   </entry>
   <entry>
@@ -3477,6 +3477,74 @@ Integration</a></li>
       </categories>
       <tags>
         <tag>图形学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>（十五）面片阴影的一些改进思考</title>
+    <url>/2023/11/13/2023-11-13-%EF%BC%88%E5%8D%81%E4%BA%94%EF%BC%89%E9%9D%A2%E7%89%87%E9%98%B4%E5%BD%B1%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%B9%E8%BF%9B%E6%80%9D%E8%80%83/</url>
+    <content><![CDATA[<h1 id="概述">概述</h1>
+<p>在之前的项目<a
+href="https://bzyzhang.github.io/2021/01/20/2021-01-20-%EF%BC%88%E4%B8%83%EF%BC%89%E5%87%A0%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E9%98%B4%E5%BD%B1%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95/">几种简单的阴影实现方法</a>中，提到了用面片实现阴影的方式。<span id="more"></span>当时提到，这种方式比较受限，只适用于平整的地面。最近在回顾这篇文章的时候，当看到第三部分的球体阴影时，忽然想到，是不是可以使用球体阴影的思想，来解决面片阴影的限制呢？</p>
+<h1 id="思路">思路</h1>
+<p>基本的思路是：在C#代码中，实时将角色的世界坐标传递给Shader，作为圆形面片阴影的圆心。然后，在Shader的片元着色器中，计算该片元距离圆心的距离，如果在半径范围内，就是处于阴影区域；否则，就不处于阴影区域。</p>
+<h1 id="实验">实验</h1>
+<p>首先搭建好方便实验的场景。新建一个球体模拟角色，新建两个立方体模拟地面和台阶。如下图所示：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1/img/2023-11-13/202311202227754.png" /></p>
+<p>新建C#脚本，将圆形面片的圆心位置和半径传递给Shader：</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">PlaneShadow</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">float</span> Radius;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">float</span> ShadowFalloff;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Shader.SetGlobalVector(<span class="string">&quot;_CenterPos&quot;</span>, transform.position);</span><br><span class="line">        Shader.SetGlobalFloat(<span class="string">&quot;_CenterRadius&quot;</span>, Radius * Radius);</span><br><span class="line">        Shader.SetGlobalFloat(<span class="string">&quot;_ShadowFalloff&quot;</span>, ShadowFalloff);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上述代码中，ShadowFalloff变量是用来控制阴影从圆心向四周衰减的。圆心处阴影最强，往四周逐渐减弱。</p>
+<p>为地面和台阶部分新建Shader。接受C#中传递过来的数据。Shader文件如下所示：</p>
+<figure class="highlight reasonml"><table><tr><td class="code"><pre><span class="line">Shader <span class="string">&quot;RoadOfShader/2.3-PlaneShadow/Plane Shadow&quot;</span></span><br><span class="line">&#123;</span><br><span class="line">    Properties</span><br><span class="line">    &#123;</span><br><span class="line">        _MainTex (<span class="string">&quot;Main Tex&quot;</span>, <span class="number">2</span>D) = <span class="string">&quot;white&quot;</span> &#123; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    SubShader</span><br><span class="line">    &#123;</span><br><span class="line">        Tags</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;Queue&quot;</span> = <span class="string">&quot;Geometry&quot;</span> <span class="string">&quot;RenderType&quot;</span> = <span class="string">&quot;Opaque&quot;</span> <span class="string">&quot;RenderPipeline&quot;</span> = <span class="string">&quot;UniversalPipeline&quot;</span> <span class="string">&quot;IgnoreProjector&quot;</span> = <span class="string">&quot;True&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Pass</span><br><span class="line">        &#123;</span><br><span class="line">            Tags</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">&quot;LightMode&quot;</span> = <span class="string">&quot;UniversalForward&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">            Cull Off</span><br><span class="line"></span><br><span class="line">            HLSLPROGRAM</span><br><span class="line">            <span class="comment">// Required to compile gles 2.0 with standard SRP library</span></span><br><span class="line">            <span class="comment">// All shaders must be compiled with HLSLcc and currently only gles is not using HLSLcc by default</span></span><br><span class="line">            #pragma prefer_hlslcc gles</span><br><span class="line">            #pragma exclude_renderers d3d11_9x</span><br><span class="line">            #pragma target <span class="number">2.0</span></span><br><span class="line"></span><br><span class="line">            #<span class="keyword">include</span> <span class="string">&quot;Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl&quot;</span></span><br><span class="line">            #<span class="keyword">include</span> <span class="string">&quot;Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl&quot;</span></span><br><span class="line"></span><br><span class="line">            #pragma vertex vert</span><br><span class="line">            #pragma fragment frag</span><br><span class="line"></span><br><span class="line">            <span class="keyword">struct</span> Attributes</span><br><span class="line">            &#123;</span><br><span class="line">                float4 positionOS: POSITION;</span><br><span class="line">                float2 uv: TEXCOORD0;</span><br><span class="line">                UNITY_VERTEX_INPUT_INSTANCE_ID</span><br><span class="line">            &#125;;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">struct</span> Varyings</span><br><span class="line">            &#123;</span><br><span class="line">                float2 uv: TEXCOORD0;</span><br><span class="line">                float3 positionWS: TEXCOORD1;</span><br><span class="line">                float4 positionCS: SV_POSITION;</span><br><span class="line">                UNITY_VERTEX_INPUT_INSTANCE_ID</span><br><span class="line">                UNITY_VERTEX_OUTPUT_STEREO</span><br><span class="line">            &#125;;</span><br><span class="line"></span><br><span class="line">            float4 _CenterPos;</span><br><span class="line">            <span class="built_in">float</span> _CenterRadius;</span><br><span class="line">            half _ShadowFalloff;</span><br><span class="line"></span><br><span class="line">            <span class="constructor">CBUFFER_START(UnityPerMaterial)</span></span><br><span class="line">            float4 _MainTex_ST;</span><br><span class="line">            CBUFFER_END</span><br><span class="line"></span><br><span class="line">            <span class="constructor">TEXTURE2D(<span class="params">_MainTex</span>)</span>;</span><br><span class="line">            <span class="constructor">SAMPLER(<span class="params">sampler_MainTex</span>)</span>;</span><br><span class="line"></span><br><span class="line">            Varyings vert(Attributes input)</span><br><span class="line">            &#123;</span><br><span class="line">                Varyings output = (Varyings)<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="constructor">UNITY_SETUP_INSTANCE_ID(<span class="params">input</span>)</span>;</span><br><span class="line">                <span class="constructor">UNITY_TRANSFER_INSTANCE_ID(<span class="params">input</span>, <span class="params">output</span>)</span>;</span><br><span class="line">                <span class="constructor">UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(<span class="params">output</span>)</span>;</span><br><span class="line"></span><br><span class="line">                VertexPositionInputs vertexInput = <span class="constructor">GetVertexPositionInputs(<span class="params">input</span>.<span class="params">positionOS</span>.<span class="params">xyz</span>)</span>;</span><br><span class="line">                output.positionWS = vertexInput.positionWS;</span><br><span class="line">                output.positionCS = vertexInput.positionCS;</span><br><span class="line"></span><br><span class="line">                output.uv = <span class="constructor">TRANSFORM_TEX(<span class="params">input</span>.<span class="params">uv</span>, <span class="params">_MainTex</span>)</span>;</span><br><span class="line"></span><br><span class="line">                return output;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            half4 frag(Varyings input): SV_Target</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="constructor">UNITY_SETUP_INSTANCE_ID(<span class="params">input</span>)</span>;</span><br><span class="line">                <span class="constructor">UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(<span class="params">input</span>)</span>;</span><br><span class="line"></span><br><span class="line">                float3 toCenter = <span class="module-access"><span class="module"><span class="identifier">_CenterPos</span>.</span></span>xyz - input.positionWS;</span><br><span class="line">                <span class="built_in">float</span> sqrDistanceXZ = dot(toCenter.xz, toCenter.xz);</span><br><span class="line"></span><br><span class="line">                half atten = (sqrDistanceXZ<span class="operator"> / </span>_CenterRadius)<span class="operator"> / </span>_ShadowFalloff;</span><br><span class="line"></span><br><span class="line">                return atten;</span><br><span class="line">            &#125;</span><br><span class="line">            ENDHLSL</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在片元着色器中，计算顶点和圆心的方向向量，点乘toCenter的xz向量，得到xz平面上方向向量长度的平方。根据方向向量的平方与半径的平方相比较，计算得到一个比率，代表阴影的强度，在和_ShadowFalloff计算之后，得到最终的阴影衰减atten。直接输出atten，效果如下：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1/img/2023-11-13/202311192240931.png" /></p>
+<p>黑色部分是阴影的区域，其余白色的部分是正常的区域。下面，改一下Shader代码，使用阴影衰减与采样得到的颜色相乘，得到带阴影的效果。注意改动片元着色器，代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="code"><pre><span class="line">half4 frag(Varyings input): SV_Target</span><br><span class="line">&#123;</span><br><span class="line">    <span class="constructor">UNITY_SETUP_INSTANCE_ID(<span class="params">input</span>)</span>;</span><br><span class="line">    <span class="constructor">UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(<span class="params">input</span>)</span>;</span><br><span class="line"></span><br><span class="line">    float3 toSphere = <span class="module-access"><span class="module"><span class="identifier">_CenterPos</span>.</span></span>xyz - input.positionWS;</span><br><span class="line">    <span class="built_in">float</span> sqrDistanceXZ = dot(toSphere.xz, toSphere.xz);</span><br><span class="line"></span><br><span class="line">    half atten = (sqrDistanceXZ<span class="operator"> / </span>_CenterRadius)<span class="operator"> / </span>_ShadowFalloff;</span><br><span class="line"></span><br><span class="line">    half4 col = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_MainTex</span>, <span class="params">sampler_MainTex</span>, <span class="params">input</span>.<span class="params">uv</span>)</span>;</span><br><span class="line">    col *= atten;</span><br><span class="line">    return col;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>效果如下：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1/img/2023-11-13/202311192243684.png" /></p>
+<p>可以发现，颜色过渡曝光。这是为什么呢？</p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><span class="line">half atten = (sqrDistanceXZ <span class="regexp">/ _CenterRadius) /</span> _ShadowFalloff;</span><br></pre></td></tr></table></figure>
+<p>观察Shader代码发现，在计算atten的时候，没有做限制。随着顶点距离圆心的位置逐渐变远，sqrDistanceXZ趋于无穷大，导致atten会趋于无穷大。这显然不符合我们的预期。可以想到的是，对最终的结果做以下限制，当顶点距离圆心的距离超过半径时，就不会受到阴影的影响了。可以使用saturate()函数来达到这一目的：</p>
+<figure class="highlight awk"><table><tr><td class="code"><pre><span class="line">half atten = saturate((sqrDistanceXZ <span class="regexp">/ _CenterRadius) /</span> _ShadowFalloff);</span><br></pre></td></tr></table></figure>
+<p>此时的效果如下：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1/img/2023-11-13/202311192249081.png" /></p>
+<p>效果看起来还不错，与原本的圆形面片阴影的效果大致相同。</p>
+<p>将模拟角色的球体往左移动到台阶正上方的效果如下：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1/img/2023-11-13/202311202228773.png" /></p>
+<p>可以发现，台阶部分有一条垂直的阴影，一直延伸到了地面之下。这是因为，我们在上面计算距离的时候，只使用了xz分量，没有使用y分量，导致在台阶的垂直面上，得到的距离都相同。结合实际的项目经验来说，台阶的高度应该是很小的，所以在地面之上的台阶部分（上图中A区）的阴影是可以接受的。不可接收到，是地面之下的台阶（上图中的B区）的阴影。我们要想办法去除地面之下的台阶阴影。</p>
+<p>可以想到的办法是，计算顶点与圆心在竖直方向上的距离差，只有满足一定的条件才会受到阴影的影响。</p>
+<p>在C#中，将竖直方向上的阴影距离范围传递给Shader：</p>
+<figure class="highlight less"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">Shader</span><span class="selector-class">.SetGlobalFloat</span>(<span class="string">&quot;_HeightRange&quot;</span>, HeightRange);</span><br></pre></td></tr></table></figure>
+<p>在片元着色器中，在竖直方向上计算一个遮罩值，用来控制哪些区域会受到阴影的影响：</p>
+<figure class="highlight reasonml"><table><tr><td class="code"><pre><span class="line">half4 frag(Varyings input): SV_Target</span><br><span class="line">&#123;</span><br><span class="line">    <span class="constructor">UNITY_SETUP_INSTANCE_ID(<span class="params">input</span>)</span>;</span><br><span class="line">    <span class="constructor">UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(<span class="params">input</span>)</span>;</span><br><span class="line"></span><br><span class="line">    float3 toSphere = <span class="module-access"><span class="module"><span class="identifier">_CenterPos</span>.</span></span>xyz - input.positionWS;</span><br><span class="line">    <span class="built_in">float</span> sqrDistanceXZ = dot(toSphere.xz, toSphere.xz);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">float</span> yMask = saturate(step(toSphere.y, <span class="number">0</span>) + step(_HeightRange, toSphere.y));</span><br><span class="line">    return yMask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>效果如下所示：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1/img/2023-11-13/202311212230539.png" /></p>
+<p>在上图中，黑色区域是竖直方向上可能受到阴影影响的区域，与我们上面的设想相符。</p>
+<p>结合之前的效果，修改Shader代码如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="code"><pre><span class="line">half4 frag(Varyings input): SV_Target</span><br><span class="line">&#123;</span><br><span class="line">    <span class="constructor">UNITY_SETUP_INSTANCE_ID(<span class="params">input</span>)</span>;</span><br><span class="line">    <span class="constructor">UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(<span class="params">input</span>)</span>;</span><br><span class="line"></span><br><span class="line">    float3 toSphere = <span class="module-access"><span class="module"><span class="identifier">_CenterPos</span>.</span></span>xyz - input.positionWS;</span><br><span class="line">    <span class="built_in">float</span> sqrDistanceXZ = dot(toSphere.xz, toSphere.xz);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">float</span> yMask = step(toSphere.y, <span class="number">0</span>) + step(_HeightRange, toSphere.y);</span><br><span class="line"></span><br><span class="line">    half atten = (sqrDistanceXZ<span class="operator"> / </span>_CenterRadius)<span class="operator"> / </span>_ShadowFalloff;</span><br><span class="line"></span><br><span class="line">    half4 col = <span class="constructor">SAMPLE_TEXTURE2D(<span class="params">_MainTex</span>, <span class="params">sampler_MainTex</span>, <span class="params">input</span>.<span class="params">uv</span>)</span>;</span><br><span class="line">    col *= saturate(atten + yMask);</span><br><span class="line">    return col;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终的效果如下所示：</p>
+<p><img
+src="https://cdn.jsdelivr.net/gh/bzyzhang/ImgHosting1/img/2023-11-13/202311212241850.gif" /></p>
+<p>最终的代码<a
+href="https://github.com/bzyzhang/RoadOfShader/tree/main/Assets/2.3-PlaneShadow">如下</a></p>
+<h1 id="总结">总结</h1>
+<p>回顾一开始说的用面片实现阴影的问题，经过我们的改进，现在也适用于非平整的地面了。</p>
+<h1 id="参考">参考</h1>
+<ul>
+<li>[1] <a
+href="https://bzyzhang.github.io/2021/01/20/2021-01-20-%EF%BC%88%E4%B8%83%EF%BC%89%E5%87%A0%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E9%98%B4%E5%BD%B1%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95/">练习项目(七)：几种简单的阴影实现</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>练习项目</category>
+      </categories>
+      <tags>
+        <tag>Shadow</tag>
       </tags>
   </entry>
 </search>
